@@ -1,0 +1,16 @@
+---
+description: Cómo usar el legado VB.NET y el BAK SQL Server como referencia
+alwaysApply: false
+---
+
+# Legado (solo referencia)
+
+- Código: `COBSER_JASS_PEDREGAL/LOGICA` (clases de dominio) y `SMA/SISTEMA` (pantallas).
+- Datos: `DB_JASS_PEDREGAL.BAK` vía Docker raíz (`npm run db:legacy:up` / `db:legacy:restore`).
+- Extraer **reglas de negocio y entidades**, no UI WinForms, Crystal Reports ni `SqlConnection` strings.
+- Reimplementar en módulos + Postgres/Supabase. No portar 1:1 formularios `.vb`.
+
+```text
+❌ Copiar frmCobranza.vb a un .tsx monolítico
+✅ Modelar cobranza en modules/cobranza con schema Zod + API Supabase
+```

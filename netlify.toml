@@ -1,0 +1,23 @@
+# Sitio estático: React + Vite en apps/web.
+# Las variables VITE_* se hornean en el build. Definirlas en
+# Site configuration → Environment variables antes del primer deploy:
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_ANON_KEY
+# Tienen que apuntar a un proyecto de Supabase en la nube.
+# El Docker local (127.0.0.1) no es accesible desde Netlify.
+
+[build]
+  base = "apps/web"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Vite incrusta la anon key en el bundle a propósito. Es pública.
+  SECRETS_SCAN_SMART_DETECTION_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_URL"
+
+# BrowserRouter: cualquier ruta que no sea un archivo sirve index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

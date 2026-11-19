@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="SMA_DATADataSet" targetNamespace="http://tempuri.org/SMA_DATADataSet.xsd" xmlns:mstns="http://tempuri.org/SMA_DATADataSet.xsd" xmlns="http://tempuri.org/SMA_DATADataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="MySettings" AppSettingsPropertyName="SMA_DATAConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="SMA_DATAConnectionString (MySettings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.COBSER.My.MySettings.GlobalReference.Default.SMA_DATAConnectionString" Provider="Microsoft.SqlServerCe.Client.3.5" />
+        </Connections>
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="SMA_DATADataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="SMA_DATADataSet" msprop:Generator_DataSetName="SMA_DATADataSet" msprop:EnableTableAdapterManager="True">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="AperturaAnio" msprop:Generator_UserTableName="AperturaAnio" msprop:Generator_RowDeletedName="AperturaAnioRowDeleted" msprop:Generator_RowChangedName="AperturaAnioRowChanged" msprop:Generator_RowClassName="AperturaAnioRow" msprop:Generator_RowChangingName="AperturaAnioRowChanging" msprop:Generator_RowEvArgName="AperturaAnioRowChangeEvent" msprop:Generator_RowEvHandlerName="AperturaAnioRowChangeEventHandler" msprop:Generator_TableClassName="AperturaAnioDataTable" msprop:Generator_TableVarName="tableAperturaAnio" msprop:Generator_RowDeletingName="AperturaAnioRowDeleting" msprop:Generator_TablePropName="AperturaAnio">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="iIdComisionRegante" msprop:Generator_UserColumnName="iIdComisionRegante" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegante" msprop:Generator_ColumnPropNameInRow="iIdComisionRegante" msprop:Generator_ColumnPropNameInTable="iIdComisionReganteColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="cEstado" msprop:Generator_UserColumnName="cEstado" msprop:Generator_ColumnVarNameInTable="columncEstado" msprop:Generator_ColumnPropNameInRow="cEstado" msprop:Generator_ColumnPropNameInTable="cEstadoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cExisteTUIMayor" msprop:Generator_UserColumnName="cExisteTUIMayor" msprop:Generator_ColumnVarNameInTable="columncExisteTUIMayor" msprop:Generator_ColumnPropNameInRow="cExisteTUIMayor" msprop:Generator_ColumnPropNameInTable="cExisteTUIMayorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="iMetasLargoPlazo" msprop:Generator_UserColumnName="iMetasLargoPlazo" msprop:Generator_ColumnVarNameInTable="columniMetasLargoPlazo" msprop:Generator_ColumnPropNameInRow="iMetasLargoPlazo" msprop:Generator_ColumnPropNameInTable="iMetasLargoPlazoColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="fValorRealTarifa" msprop:Generator_UserColumnName="fValorRealTarifa" msprop:Generator_ColumnVarNameInTable="columnfValorRealTarifa" msprop:Generator_ColumnPropNameInRow="fValorRealTarifa" msprop:Generator_ColumnPropNameInTable="fValorRealTarifaColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="fValorActualTarifa" msprop:Generator_UserColumnName="fValorActualTarifa" msprop:Generator_ColumnVarNameInTable="columnfValorActualTarifa" msprop:Generator_ColumnPropNameInRow="fValorActualTarifa" msprop:Generator_ColumnPropNameInTable="fValorActualTarifaColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="dFechaIniCamp" msprop:Generator_UserColumnName="dFechaIniCamp" msprop:Generator_ColumnVarNameInTable="columndFechaIniCamp" msprop:Generator_ColumnPropNameInRow="dFechaIniCamp" msprop:Generator_ColumnPropNameInTable="dFechaIniCampColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="dFechaFinCamp" msprop:Generator_UserColumnName="dFechaFinCamp" msprop:Generator_ColumnVarNameInTable="columndFechaFinCamp" msprop:Generator_ColumnPropNameInRow="dFechaFinCamp" msprop:Generator_ColumnPropNameInTable="dFechaFinCampColumn" type="xs:dateTime" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="EstructuraSMA" msprop:Generator_UserTableName="EstructuraSMA" msprop:Generator_RowDeletedName="EstructuraSMARowDeleted" msprop:Generator_RowChangedName="EstructuraSMARowChanged" msprop:Generator_RowClassName="EstructuraSMARow" msprop:Generator_RowChangingName="EstructuraSMARowChanging" msprop:Generator_RowEvArgName="EstructuraSMARowChangeEvent" msprop:Generator_RowEvHandlerName="EstructuraSMARowChangeEventHandler" msprop:Generator_TableClassName="EstructuraSMADataTable" msprop:Generator_TableVarName="tableEstructuraSMA" msprop:Generator_RowDeletingName="EstructuraSMARowDeleting" msprop:Generator_TablePropName="EstructuraSMA">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:string" />
+              <xs:element name="iIdComisionRegante" msprop:Generator_UserColumnName="iIdComisionRegante" msprop:Generator_ColumnPropNameInRow="iIdComisionRegante" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegante" msprop:Generator_ColumnPropNameInTable="iIdComisionReganteColumn" type="xs:string" />
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" />
+              <xs:element name="idEstructura" msprop:Generator_UserColumnName="idEstructura" msprop:Generator_ColumnPropNameInRow="idEstructura" msprop:Generator_ColumnVarNameInTable="columnidEstructura" msprop:Generator_ColumnPropNameInTable="idEstructuraColumn" type="xs:int" />
+              <xs:element name="fLineaBase" msprop:Generator_UserColumnName="fLineaBase" msprop:Generator_ColumnPropNameInRow="fLineaBase" msprop:Generator_ColumnVarNameInTable="columnfLineaBase" msprop:Generator_ColumnPropNameInTable="fLineaBaseColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="fMeta" msprop:Generator_UserColumnName="fMeta" msprop:Generator_ColumnPropNameInRow="fMeta" msprop:Generator_ColumnVarNameInTable="columnfMeta" msprop:Generator_ColumnPropNameInTable="fMetaColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="fPeso" msprop:Generator_UserColumnName="fPeso" msprop:Generator_ColumnPropNameInRow="fPeso" msprop:Generator_ColumnVarNameInTable="columnfPeso" msprop:Generator_ColumnPropNameInTable="fPesoColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="fPrioridad" msprop:Generator_UserColumnName="fPrioridad" msprop:Generator_ColumnPropNameInRow="fPrioridad" msprop:Generator_ColumnVarNameInTable="columnfPrioridad" msprop:Generator_ColumnPropNameInTable="fPrioridadColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="cMedicionAnual" msprop:Generator_UserColumnName="cMedicionAnual" msprop:Generator_ColumnPropNameInRow="cMedicionAnual" msprop:Generator_ColumnVarNameInTable="columncMedicionAnual" msprop:Generator_ColumnPropNameInTable="cMedicionAnualColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:length value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="cEstadoCalculado" msprop:Generator_UserColumnName="cEstadoCalculado" msprop:Generator_ColumnPropNameInRow="cEstadoCalculado" msprop:Generator_ColumnVarNameInTable="columncEstadoCalculado" msprop:Generator_ColumnPropNameInTable="cEstadoCalculadoColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:length value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="cCondicion" msprop:Generator_UserColumnName="cCondicion" msprop:Generator_ColumnPropNameInRow="cCondicion" msprop:Generator_ColumnVarNameInTable="columncCondicion" msprop:Generator_ColumnPropNameInTable="cCondicionColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:length value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ProgramacionEjecucion" msprop:Generator_UserTableName="ProgramacionEjecucion" msprop:Generator_RowDeletedName="ProgramacionEjecucionRowDeleted" msprop:Generator_RowChangedName="ProgramacionEjecucionRowChanged" msprop:Generator_RowClassName="ProgramacionEjecucionRow" msprop:Generator_RowChangingName="ProgramacionEjecucionRowChanging" msprop:Generator_RowEvArgName="ProgramacionEjecucionRowChangeEvent" msprop:Generator_RowEvHandlerName="ProgramacionEjecucionRowChangeEventHandler" msprop:Generator_TableClassName="ProgramacionEjecucionDataTable" msprop:Generator_TableVarName="tableProgramacionEjecucion" msprop:Generator_RowDeletingName="ProgramacionEjecucionRowDeleting" msprop:Generator_TablePropName="ProgramacionEjecucion">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:string" />
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" />
+              <xs:element name="iIdComisionRegante" msprop:Generator_UserColumnName="iIdComisionRegante" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegante" msprop:Generator_ColumnPropNameInRow="iIdComisionRegante" msprop:Generator_ColumnPropNameInTable="iIdComisionReganteColumn" type="xs:int" />
+              <xs:element name="idEstructura" msprop:Generator_UserColumnName="idEstructura" msprop:Generator_ColumnVarNameInTable="columnidEstructura" msprop:Generator_ColumnPropNameInRow="idEstructura" msprop:Generator_ColumnPropNameInTable="idEstructuraColumn" type="xs:int" />
+              <xs:element name="iMes" msprop:Generator_UserColumnName="iMes" msprop:Generator_ColumnVarNameInTable="columniMes" msprop:Generator_ColumnPropNameInRow="iMes" msprop:Generator_ColumnPropNameInTable="iMesColumn" type="xs:int" />
+              <xs:element name="fValorProgramado" msprop:Generator_UserColumnName="fValorProgramado" msprop:Generator_ColumnVarNameInTable="columnfValorProgramado" msprop:Generator_ColumnPropNameInRow="fValorProgramado" msprop:Generator_ColumnPropNameInTable="fValorProgramadoColumn" type="xs:decimal" minOccurs="0" />
+              <xs:element name="fValorEjecutado" msprop:Generator_UserColumnName="fValorEjecutado" msprop:Generator_ColumnVarNameInTable="columnfValorEjecutado" msprop:Generator_ColumnPropNameInRow="fValorEjecutado" msprop:Generator_ColumnPropNameInTable="fValorEjecutadoColumn" type="xs:decimal" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="EjecucionRubros" msprop:Generator_UserTableName="EjecucionRubros" msprop:Generator_RowDeletedName="EjecucionRubrosRowDeleted" msprop:Generator_RowChangedName="EjecucionRubrosRowChanged" msprop:Generator_RowClassName="EjecucionRubrosRow" msprop:Generator_RowChangingName="EjecucionRubrosRowChanging" msprop:Generator_RowEvArgName="EjecucionRubrosRowChangeEvent" msprop:Generator_RowEvHandlerName="EjecucionRubrosRowChangeEventHandler" msprop:Generator_TableClassName="EjecucionRubrosDataTable" msprop:Generator_TableVarName="tableEjecucionRubros" msprop:Generator_RowDeletingName="EjecucionRubrosRowDeleting" msprop:Generator_TablePropName="EjecucionRubros">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:string" />
+              <xs:element name="iIdComisionRegante" msprop:Generator_UserColumnName="iIdComisionRegante" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegante" msprop:Generator_ColumnPropNameInRow="iIdComisionRegante" msprop:Generator_ColumnPropNameInTable="iIdComisionReganteColumn" type="xs:int" />
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" />
+              <xs:element name="iIdRubro" msprop:Generator_UserColumnName="iIdRubro" msprop:Generator_ColumnVarNameInTable="columniIdRubro" msprop:Generator_ColumnPropNameInRow="iIdRubro" msprop:Generator_ColumnPropNameInTable="iIdRubroColumn" type="xs:int" />
+              <xs:element name="fValorAcumulado" msprop:Generator_UserColumnName="fValorAcumulado" msprop:Generator_ColumnVarNameInTable="columnfValorAcumulado" msprop:Generator_ColumnPropNameInRow="fValorAcumulado" msprop:Generator_ColumnPropNameInTable="fValorAcumuladoColumn" type="xs:decimal" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="RubroMes" msprop:Generator_UserTableName="RubroMes" msprop:Generator_RowDeletedName="RubroMesRowDeleted" msprop:Generator_RowChangedName="RubroMesRowChanged" msprop:Generator_RowClassName="RubroMesRow" msprop:Generator_RowChangingName="RubroMesRowChanging" msprop:Generator_RowEvArgName="RubroMesRowChangeEvent" msprop:Generator_RowEvHandlerName="RubroMesRowChangeEventHandler" msprop:Generator_TableClassName="RubroMesDataTable" msprop:Generator_TableVarName="tableRubroMes" msprop:Generator_RowDeletingName="RubroMesRowDeleting" msprop:Generator_TablePropName="RubroMes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:string" />
+              <xs:element name="iIdComisionRegante" msprop:Generator_UserColumnName="iIdComisionRegante" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegante" msprop:Generator_ColumnPropNameInRow="iIdComisionRegante" msprop:Generator_ColumnPropNameInTable="iIdComisionReganteColumn" type="xs:int" />
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" />
+              <xs:element name="iIdMes" msprop:Generator_UserColumnName="iIdMes" msprop:Generator_ColumnVarNameInTable="columniIdMes" msprop:Generator_ColumnPropNameInRow="iIdMes" msprop:Generator_ColumnPropNameInTable="iIdMesColumn" type="xs:int" />
+              <xs:element name="iIdRubro" msprop:Generator_UserColumnName="iIdRubro" msprop:Generator_ColumnVarNameInTable="columniIdRubro" msprop:Generator_ColumnPropNameInRow="iIdRubro" msprop:Generator_ColumnPropNameInTable="iIdRubroColumn" type="xs:int" />
+              <xs:element name="fValor" msprop:Generator_UserColumnName="fValor" msprop:Generator_ColumnVarNameInTable="columnfValor" msprop:Generator_ColumnPropNameInRow="fValor" msprop:Generator_ColumnPropNameInTable="fValorColumn" type="xs:decimal" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="CalculoActividadFinanciera" msprop:Generator_UserTableName="CalculoActividadFinanciera" msprop:Generator_RowDeletedName="CalculoActividadFinancieraRowDeleted" msprop:Generator_RowChangedName="CalculoActividadFinancieraRowChanged" msprop:Generator_RowClassName="CalculoActividadFinancieraRow" msprop:Generator_RowChangingName="CalculoActividadFinancieraRowChanging" msprop:Generator_RowEvArgName="CalculoActividadFinancieraRowChangeEvent" msprop:Generator_RowEvHandlerName="CalculoActividadFinancieraRowChangeEventHandler" msprop:Generator_TableClassName="CalculoActividadFinancieraDataTable" msprop:Generator_TableVarName="tableCalculoActividadFinanciera" msprop:Generator_RowDeletingName="CalculoActividadFinancieraRowDeleting" msprop:Generator_TablePropName="CalculoActividadFinanciera">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="iAnio" msprop:Generator_UserColumnName="iAnio" msprop:Generator_ColumnVarNameInTable="columniAnio" msprop:Generator_ColumnPropNameInRow="iAnio" msprop:Generator_ColumnPropNameInTable="iAnioColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="vIdJuntaUsuario" msprop:Generator_UserColumnName="vIdJuntaUsuario" msprop:Generator_ColumnVarNameInTable="columnvIdJuntaUsuario" msprop:Generator_ColumnPropNameInRow="vIdJuntaUsuario" msprop:Generator_ColumnPropNameInTable="vIdJuntaUsuarioColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="iIdComisionRegantes" msprop:Generator_UserColumnName="iIdComisionRegantes" msprop:Generator_ColumnVarNameInTable="columniIdComisionRegantes" msprop:Generator_ColumnPropNameInRow="iIdComisionRegantes" msprop:Generator_ColumnPropNameInTable="iIdComisionRegantesColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="idEstructura" msprop:Generator_UserColumnName="idEstructura" msprop:Generator_ColumnVarNameInTable="columnidEstructura" msprop:Generator_ColumnPropNameInRow="idEstructura" msprop:Generator_ColumnPropNameInTable="idEstructuraColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="iIdRubro" msprop:Generator_UserColumnName="iIdRubro" msprop:Generator_ColumnVarNameInTable="columniIdRubro" msprop:Generator_ColumnPropNameInRow="iIdRubro" msprop:Generator_ColumnPropNameInTable="iIdRubroColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="iIdProgramacion" msprop:Generator_UserColumnName="iIdProgramacion" msprop:Generator_ColumnVarNameInTable="columniIdProgramacion" msprop:Generator_ColumnPropNameInRow="iIdProgramacion" msprop:Generator_ColumnPropNameInTable="iIdProgramacionColumn" type="xs:int" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="AperturaAnioKey1">
+      <xs:selector xpath=".//mstns:AperturaAnio" />
+      <xs:field xpath="mstns:iAnio" />
+      <xs:field xpath="mstns:vIdJuntaUsuario" />
+      <xs:field xpath="mstns:iIdComisionRegante" />
+    </xs:unique>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:EstructuraSMA" />
+      <xs:field xpath="mstns:vIdJuntaUsuario" />
+      <xs:field xpath="mstns:idEstructura" />
+      <xs:field xpath="mstns:iAnio" />
+      <xs:field xpath="mstns:iIdComisionRegante" />
+    </xs:unique>
+    <xs:unique name="ProgramacionEjecucion_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ProgramacionEjecucion" />
+      <xs:field xpath="mstns:vIdJuntaUsuario" />
+      <xs:field xpath="mstns:iMes" />
+      <xs:field xpath="mstns:idEstructura" />
+      <xs:field xpath="mstns:iIdComisionRegante" />
+      <xs:field xpath="mstns:iAnio" />
+    </xs:unique>
+    <xs:unique name="EjecucionRubros_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:EjecucionRubros" />
+      <xs:field xpath="mstns:vIdJuntaUsuario" />
+      <xs:field xpath="mstns:iIdComisionRegante" />
+      <xs:field xpath="mstns:iAnio" />
+      <xs:field xpath="mstns:iIdRubro" />
+    </xs:unique>
+    <xs:unique name="RubroMes_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:RubroMes" />
+      <xs:field xpath="mstns:iIdRubro" />
+      <xs:field xpath="mstns:iIdMes" />
+      <xs:field xpath="mstns:iAnio" />
+      <xs:field xpath="mstns:iIdComisionRegante" />
+      <xs:field xpath="mstns:vIdJuntaUsuario" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

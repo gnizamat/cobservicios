@@ -1,0 +1,21 @@
+---
+description: React Hook Form + Zod + TanStack Query + Supabase
+globs: src/modules/**/*.{ts,tsx},src/shared/lib/**/*
+alwaysApply: false
+---
+
+# Forms y data
+
+- Validación: Zod en `modules/*/schemas`; `zodResolver` + RHF en la UI.
+- Fetch/mutations: TanStack Query en `modules/*/api`.
+- Cliente Supabase solo desde `shared/lib/supabase.ts` (o helpers del módulo que lo usen).
+- No `fetch` ad hoc a URLs de Supabase desde componentes.
+
+```tsx
+// ❌ BAD
+const [data, setData] = useState([])
+useEffect(() => { supabase.from('x').select().then(...) }, [])
+
+// ✅ GOOD
+const { data } = useQuery({ queryKey: ['x'], queryFn: listX })
+```

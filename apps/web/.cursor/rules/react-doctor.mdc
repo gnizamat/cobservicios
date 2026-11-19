@@ -1,0 +1,33 @@
+---
+description: Obligatorio verificar con React Doctor todo código React generado o editado
+alwaysApply: true
+---
+
+# React Doctor (verificación obligatoria)
+
+Después de crear o editar archivos React/TSX en este proyecto, **siempre** correr React Doctor antes de dar por terminada la tarea.
+
+## Comandos
+
+```bash
+# Tras cambios (regresiones vs base + untracked)
+npm run doctor:changed
+
+# Escaneo completo / cierre de feature
+npm run doctor
+
+# Gate local (lint + build + doctor)
+npm run verify
+```
+
+Desde el orquestador: `npm run web:doctor:changed` / `npm run web:verify`.
+
+## Política
+
+1. Correr `doctor:changed` al terminar un lote de cambios React.
+2. Si hay **errors** o el score baja: corregir antes de cerrar.
+3. Warnings: corregir si son del código que tocaste; no dejar errores.
+4. No silenciar reglas con `eslint-disable` / ignores amplios sin justificación en el PR/mensaje.
+5. El hook `stop` de `.cursor/hooks.json` también dispara un scan; aun así el agente debe correr el script de forma explícita.
+
+Skill local: `.agents/skills/react-doctor/SKILL.md` (comando `/react-doctor`).

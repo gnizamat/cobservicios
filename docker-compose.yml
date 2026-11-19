@@ -1,0 +1,29 @@
+# Solo SQL Server para inspeccionar/restaurar el backup legado.
+# Base activa: DB_JASS_NVOTALLAN. El backend de la app vive en apps/web vía `supabase start`.
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: cobservicios-sqlserver-legacy
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Cobser_Legacy_2022!"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - "D:/PROYECTOS/PROYECTOS COBSER/BASE DE DATOS/DB_JASS_NVOTALLAN.BAK:/backup/DB_JASS_NVOTALLAN.BAK:ro"
+      - ./docker/sqlserver/restore:/restore:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Cobser_Legacy_2022!' -C -Q 'SELECT 1' || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  sqlserver_data:

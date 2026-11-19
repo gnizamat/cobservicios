@@ -1,0 +1,26 @@
+{
+  "name": "cobservicios",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Orquestador COBSERVICIOS — delega a apps/web y al Docker legado SQL Server",
+  "scripts": {
+    "web:dev": "npm --prefix apps/web run dev",
+    "web:build": "npm --prefix apps/web run build",
+    "web:lint": "npm --prefix apps/web run lint",
+    "web:doctor": "npm --prefix apps/web run doctor",
+    "web:doctor:changed": "npm --prefix apps/web run doctor:changed",
+    "web:verify": "npm --prefix apps/web run verify",
+    "web:preview": "npm --prefix apps/web run preview",
+    "supabase:start": "npm --prefix apps/web run supabase:start",
+    "supabase:stop": "npm --prefix apps/web run supabase:stop",
+    "supabase:status": "npm --prefix apps/web run supabase:status",
+    "db:legacy:up": "docker compose up -d sqlserver",
+    "db:legacy:down": "docker compose down",
+    "db:legacy:restore": "powershell -ExecutionPolicy Bypass -File ./docker/sqlserver/restore/restore.ps1",
+    "migrate:padron": "npm --prefix apps/web run migrate:padron",
+    "dev": "npm run supabase:start && npm run web:dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

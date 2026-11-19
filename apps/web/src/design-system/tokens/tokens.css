@@ -1,0 +1,163 @@
+/* Design tokens — source of truth for color, spacing, type, radius, elevation.
+   Do not hardcode these values in components; consume via CSS vars / Tailwind theme. */
+
+:root {
+  --radius: 0.5rem;
+
+  --font-sans: "Segoe UI", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "IBM Plex Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacing scale (reference; prefer Tailwind spacing + semantic tokens below) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / 0.08);
+  --shadow-lg: 0 12px 32px rgb(15 23 42 / 0.12);
+
+  /* Yaqu: fondo lavanda suave y acento azul. Es el tema por defecto del menú. */
+  --background: oklch(0.955 0.02 285);
+  --foreground: oklch(0.28 0.04 275);
+  --card: oklch(0.985 0.012 285);
+  --card-foreground: oklch(0.28 0.04 275);
+  --popover: oklch(0.99 0.008 285);
+  --popover-foreground: oklch(0.28 0.04 275);
+  --primary: oklch(0.55 0.16 265);
+  --primary-foreground: oklch(0.98 0.01 285);
+  --secondary: oklch(0.94 0.02 285);
+  --secondary-foreground: oklch(0.32 0.04 275);
+  --muted: oklch(0.94 0.015 285);
+  --muted-foreground: oklch(0.5 0.03 275);
+  --accent: oklch(0.62 0.14 265);
+  --accent-foreground: oklch(0.98 0.01 285);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.9 0.02 285);
+  --input: oklch(0.9 0.02 285);
+  --ring: oklch(0.55 0.16 265);
+}
+
+html[data-theme='yaqu-dark'] {
+  --background: oklch(0.16 0.03 275);
+  --foreground: oklch(0.95 0.015 285);
+  --card: oklch(0.2 0.035 275);
+  --card-foreground: oklch(0.95 0.015 285);
+  --popover: oklch(0.23 0.035 275);
+  --popover-foreground: oklch(0.95 0.015 285);
+  --primary: oklch(0.68 0.14 265);
+  --primary-foreground: oklch(0.16 0.03 275);
+  --secondary: oklch(0.27 0.03 275);
+  --secondary-foreground: oklch(0.94 0.015 285);
+  --muted: oklch(0.27 0.03 275);
+  --muted-foreground: oklch(0.74 0.02 285);
+  --accent: oklch(0.68 0.14 265);
+  --accent-foreground: oklch(0.16 0.03 275);
+  --destructive: oklch(0.68 0.17 25);
+  --border: oklch(0.32 0.03 275);
+  --input: oklch(0.32 0.03 275);
+  --ring: oklch(0.68 0.14 265);
+}
+
+html[data-theme='claro'] {
+  --background: oklch(0.985 0.008 240);
+  --foreground: oklch(0.22 0.03 240);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.03 240);
+  --primary: oklch(0.48 0.14 255);
+  --primary-foreground: oklch(0.98 0.01 240);
+  --secondary: oklch(0.95 0.015 240);
+  --secondary-foreground: oklch(0.28 0.04 240);
+  --muted: oklch(0.96 0.01 240);
+  --muted-foreground: oklch(0.48 0.03 240);
+  --accent: oklch(0.48 0.14 255);
+  --accent-foreground: oklch(0.98 0.01 240);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.9 0.015 240);
+  --input: oklch(0.9 0.015 240);
+  --ring: oklch(0.48 0.14 255);
+}
+
+html[data-theme='black'] {
+  --background: oklch(0.1 0 0);
+  --foreground: oklch(0.96 0 0);
+  --card: oklch(0.14 0 0);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.92 0.01 250);
+  --primary-foreground: oklch(0.12 0 0);
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.92 0.01 250);
+  --accent-foreground: oklch(0.12 0 0);
+  --destructive: oklch(0.68 0.18 25);
+  --border: oklch(0.28 0 0);
+  --input: oklch(0.28 0 0);
+  --ring: oklch(0.92 0.01 250);
+}
+
+html[data-theme='claude'] {
+  --background: oklch(0.955 0.02 85);
+  --foreground: oklch(0.32 0.04 55);
+  --card: oklch(0.985 0.015 90);
+  --card-foreground: oklch(0.32 0.04 55);
+  --popover: oklch(0.99 0.012 90);
+  --popover-foreground: oklch(0.32 0.04 55);
+  --primary: oklch(0.62 0.13 55);
+  --primary-foreground: oklch(0.98 0.01 90);
+  --secondary: oklch(0.94 0.02 85);
+  --secondary-foreground: oklch(0.34 0.04 55);
+  --muted: oklch(0.94 0.018 85);
+  --muted-foreground: oklch(0.5 0.04 55);
+  --accent: oklch(0.62 0.13 55);
+  --accent-foreground: oklch(0.98 0.01 90);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.9 0.02 80);
+  --input: oklch(0.9 0.02 80);
+  --ring: oklch(0.62 0.13 55);
+}
+
+html[data-theme='eco-lima'] {
+  --background: oklch(0.985 0.012 145);
+  --foreground: oklch(0.28 0.04 155);
+  --card: oklch(0.995 0.006 145);
+  --card-foreground: oklch(0.28 0.04 155);
+  --popover: oklch(1 0.004 145);
+  --popover-foreground: oklch(0.28 0.04 155);
+  --primary: oklch(0.52 0.14 145);
+  --primary-foreground: oklch(0.98 0.01 145);
+  --secondary: oklch(0.95 0.02 145);
+  --secondary-foreground: oklch(0.3 0.04 155);
+  --muted: oklch(0.95 0.015 145);
+  --muted-foreground: oklch(0.48 0.04 155);
+  --accent: oklch(0.62 0.16 135);
+  --accent-foreground: oklch(0.2 0.04 150);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.9 0.02 145);
+  --input: oklch(0.9 0.02 145);
+  --ring: oklch(0.52 0.14 145);
+}
+
+.theme-swatch {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.theme-swatch-yaqu { background: linear-gradient(135deg, oklch(0.97 0.02 285) 48%, oklch(0.58 0.16 265) 52%); }
+.theme-swatch-yaqu-dark { background: linear-gradient(135deg, oklch(0.2 0.04 275) 48%, oklch(0.62 0.16 265) 52%); }
+.theme-swatch-claro { background: linear-gradient(135deg, oklch(0.99 0.005 240) 48%, oklch(0.55 0.16 255) 52%); }
+.theme-swatch-black { background: linear-gradient(135deg, oklch(0.08 0 0) 48%, oklch(0.96 0 0) 52%); }
+.theme-swatch-claude { background: linear-gradient(135deg, oklch(0.96 0.02 85) 48%, oklch(0.66 0.14 55) 52%); }
+.theme-swatch-eco-lima { background: linear-gradient(135deg, oklch(0.99 0.01 145) 48%, oklch(0.62 0.16 140) 52%); }

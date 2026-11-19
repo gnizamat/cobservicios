@@ -1,0 +1,21 @@
+-- Restaura el backup legado montado en /backup/DB_JASS_NVOTALLAN.BAK
+-- restore.ps1 reescribe los logical names si FILELISTONLY los detecta.
+
+USE [master];
+GO
+
+IF DB_ID(N'DB_JASS_NVOTALLAN') IS NOT NULL
+BEGIN
+  ALTER DATABASE [DB_JASS_NVOTALLAN] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+  DROP DATABASE [DB_JASS_NVOTALLAN];
+END
+GO
+
+RESTORE DATABASE [DB_JASS_NVOTALLAN]
+FROM DISK = N'/backup/DB_JASS_NVOTALLAN.BAK'
+WITH
+  MOVE N'SIMIG' TO N'/var/opt/mssql/data/DB_JASS_NVOTALLAN.mdf',
+  MOVE N'SIMIG_log' TO N'/var/opt/mssql/data/DB_JASS_NVOTALLAN_log.ldf',
+  REPLACE,
+  STATS = 10;
+GO

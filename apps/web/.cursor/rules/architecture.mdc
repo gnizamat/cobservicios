@@ -1,0 +1,36 @@
+---
+description: Arquitectura modular + Atomic Design + stack obligatorio
+alwaysApply: true
+---
+
+# Arquitectura COBSERVICIOS web
+
+## Stack obligatorio
+
+React + Vite + TypeScript, Tailwind, shadcn (`components/ui`), Lucide, React Hook Form, Zod, TanStack Query, Supabase (`@supabase/supabase-js`).
+
+Tras editar React: `npm run doctor:changed` (ver regla `react-doctor`).
+
+## Capas
+
+- Dominio → `src/modules/<name>/`
+- UI reutilizable → `src/design-system/` (tokens → atoms → molecules → organisms → templates)
+- Primitivos shadcn → `src/components/ui/` únicamente
+- Infra compartida → `src/shared/`
+
+## Reglas
+
+- Un feature nuevo = módulo (o extensión de uno existente). No meter dominio en `app/` ni en `shared/`.
+- Importar módulos solo vía `@/modules/<name>` (su `index.ts`).
+- No hardcodear colores/spacing: tokens / theme.
+- Backend local = Docker Supabase de **este** proyecto (`supabase/`). No usar el SQL Server de la raíz como runtime de la app.
+
+```tsx
+// ❌ BAD — dominio en shared + ui shadcn directo
+import { Button } from '@/components/ui/button'
+import { fetchPredios } from '@/shared/lib/predios'
+
+// ✅ GOOD
+import { Button } from '@/design-system'
+import { usePredios } from '@/modules/predios'
+```

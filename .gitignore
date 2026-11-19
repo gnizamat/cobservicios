@@ -1,0 +1,34 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+Thumbs.db
+
+# Supabase local
+apps/web/supabase/.temp/
+apps/web/supabase/.branches/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# OS
+Desktop.ini
+
+# Datos locales y backups (no publicar)
+*.BAK
+*.bak
+*.sdf
+apps/web/scripts/.migrate-cache/
+
+# Compilación e instaladores del legado VB.NET
+**/bin/
+**/obj/
+*.msi
+*.rar
+*.user

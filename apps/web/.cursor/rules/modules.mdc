@@ -1,0 +1,25 @@
+---
+description: Estructura y límites de módulos de dominio
+globs: src/modules/**/*
+alwaysApply: false
+---
+
+# Módulos
+
+Cada módulo: `api/`, `schemas/`, `pages/`, `components/`, `types/`, `index.ts`.
+
+- `api/` — llamadas Supabase + hooks TanStack Query.
+- `schemas/` — Zod (fuente de verdad de forms).
+- `components/` — UI del dominio (compuesta con design-system).
+- `pages/` — pantallas enrutables.
+- `index.ts` — única API pública.
+
+No importar rutas profundas de otro módulo (`@/modules/x/api/...`). Si hace falta compartir, subir a `shared/` o exponer por `index.ts`.
+
+```ts
+// ❌ BAD
+import { getUser } from '@/modules/usuarios/api/get-user'
+
+// ✅ GOOD
+import { getUser } from '@/modules/usuarios'
+```

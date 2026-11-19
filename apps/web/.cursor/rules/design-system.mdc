@@ -1,0 +1,22 @@
+---
+description: Atomic Design desde tokens; shadcn solo en components/ui
+globs: src/design-system/**/*,src/components/ui/**/*
+alwaysApply: false
+---
+
+# Design system
+
+Orden de dependencia: **tokens → atoms → molecules → organisms → templates**.
+
+- Tokens viven en `design-system/tokens/` (CSS vars) y se mapean en `index.css` (`@theme`).
+- `components/ui/*` = primitivos shadcn sin dominio.
+- Átomos reexportan/adaptan ui; molecules+ no importan de `components/ui` salvo vía atoms.
+- No crear “cards” decorativas sin interacción; layouts van en templates.
+
+```tsx
+// ❌ BAD — color hardcodeado saltando tokens
+<div className="bg-[#4F46E5] p-[13px]" />
+
+// ✅ GOOD
+<div className="bg-primary p-4" />
+```

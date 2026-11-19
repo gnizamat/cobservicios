@@ -1,0 +1,15 @@
+---
+description: Supabase local (Docker propio de apps/web), migrations y tipos
+globs: supabase/**/*,src/shared/lib/supabase.ts,src/shared/types/database.ts
+alwaysApply: false
+---
+
+# Supabase
+
+- Este proyecto es dueño de su Docker: `npx supabase start` desde `apps/web`.
+- Schema vía `supabase/migrations/*.sql`. No editar la DB solo a mano en Studio sin migration.
+- Tipos: `npm run supabase:types` → `src/shared/types/database.ts`.
+- Habilitar RLS en tablas de negocio; policies en migrations.
+- Env: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` en `.env.local`.
+
+No apuntar la app al SQL Server legado de la raíz.
