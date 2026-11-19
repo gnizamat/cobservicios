@@ -32,3 +32,6 @@ apps/web/scripts/.migrate-cache/
 *.msi
 *.rar
 *.user
+
+# Local Netlify folder
+.netlify
