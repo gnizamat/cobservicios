@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  deleteLectura,
   listControles,
   listEstructuras,
   listValoresVolumen,
@@ -144,6 +145,17 @@ export function useSaveLectura() {
   return useMutation({
     mutationFn: (input: { id: string | null; payload: LecturaPayload }) =>
       saveLectura(input.id, input.payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: lecturasQueryKeys.lecturas })
+      await queryClient.invalidateQueries({ queryKey: ['deudas'] })
+    },
+  })
+}
+
+export function useDeleteLectura() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteLectura(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: lecturasQueryKeys.lecturas })
       await queryClient.invalidateQueries({ queryKey: ['deudas'] })

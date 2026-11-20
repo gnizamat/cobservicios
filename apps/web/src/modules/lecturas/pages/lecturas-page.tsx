@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { FilterSelect, PaginationBar } from '@/design-system/molecules'
 import { DataTable } from '@/design-system/organisms'
 import {
+  useDeleteLectura,
   useLecturas,
   useMarcasMedidor,
   usePagedPredios,
@@ -11,13 +12,14 @@ import {
   useTerritorioLectura,
   useValoresVolumen,
   type LecturaListItem,
+  type ValorM3Activo,
 } from '@/modules/lecturas/api'
 import { HidroWorkspace } from '@/modules/lecturas/components/hidro-workspace'
 import { LecturaForm } from '@/modules/lecturas/components/lectura-form'
 import { MedidorForm } from '@/modules/lecturas/components/medidor-form'
 import { PredioUsuarioTable } from '@/modules/lecturas/components/predio-usuario-table'
-import { EditRowButton, SaveNotice } from '@/modules/lecturas/components/record-actions'
-import { formatMoney, formatVolume, periodoLabel, titularLabel } from '@/modules/lecturas/labels'
+import { DeleteRowButton, EditRowButton, SaveNotice } from '@/modules/lecturas/components/record-actions'
+import { formatMoney, formatVolume, periodoLabel, roundMoney, titularLabel } from '@/modules/lecturas/labels'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 
 const lecturaColumns = [
@@ -25,7 +27,9 @@ const lecturaColumns = [
   { key: 'periodo', header: 'Periodo' },
   { key: 'lectura', header: 'Lectura m³', className: 'text-right' },
   { key: 'volumen', header: 'Volumen m³', className: 'text-right' },
-  { key: 'editar', header: '', className: 'w-24 text-right' },
+  { key: 'tarifa', header: 'Tarifa m³', className: 'text-right' },
+  { key: 'monto', header: 'A pagar', className: 'text-right' },
+  { key: 'editar', header: '', className: 'w-40 text-right' },
 ]
 
 export function LecturasPage() {
@@ -34,6 +38,7 @@ export function LecturasPage() {
   const [calleId, setCalleId] = useState('all')
   const search = useDebouncedValue(searchInput.trim(), 200)
   const [savedLabel, setSavedLabel] = useState<string | null>(null)
+  const [removedLabel, setRemovedLabel] = useState<string | null>(null)
   const [lecturaId, setLecturaId] = useState<string | null>(null)
   const [panel, setPanel] = useState<'lectura' | 'medidor'>('lectura')
   const territorio = useTerritorioLectura()
@@ -62,6 +67,7 @@ export function LecturasPage() {
   const valoresM3 = useValoresVolumen()
   const query = useLecturas()
   const save = useSaveLectura()
+  const remove = useDeleteLectura()
   const saveMedidor = useSaveMedidor()
   const selectedPredio = catalogo.selected
   const predioOptions =
@@ -143,6 +149,7 @@ export function LecturasPage() {
               selectedId={selectedPredio?.id}
               onSelect={(id) => {
                 setSavedLabel(null)
+                setRemovedLabel(null)
                 setLecturaId(null)
                 setPanel('lectura')
                 catalogo.select(id)
@@ -165,15 +172,39 @@ export function LecturasPage() {
           {selectedPredio ? (
             <section className="space-y-2">
               <h3 className="text-sm font-medium text-foreground">Lecturas de {titular}</h3>
+              {removedLabel ? (
+                <p className="text-sm text-foreground" role="status">
+                  Se eliminó la lectura de {removedLabel}.
+                </p>
+              ) : null}
               <LecturasDelPredio
                 loading={query.isLoading}
-                error={query.isError ? (query.error as Error).message : null}
+                error={
+                  remove.isError
+                    ? (remove.error as Error).message
+                    : query.isError
+                      ? (query.error as Error).message
+                      : null
+                }
                 records={lecturasPredio}
+                valoresM3={valoresM3.data ?? []}
                 selectedId={lectura?.id}
+                deletingId={remove.isPending ? remove.variables : undefined}
                 onSelect={(id) => {
                   setSavedLabel(null)
                   setPanel('lectura')
                   setLecturaId(id)
+                }}
+                onDelete={(row) => {
+                  const periodo = periodoLabel(row.anio, row.mes)
+                  if (!window.confirm(`¿Eliminar la lectura de ${periodo}?`)) return
+                  setSavedLabel(null)
+                  remove.mutate(row.id, {
+                    onSuccess: () => {
+                      if (lecturaId === row.id) setLecturaId(null)
+                      setRemovedLabel(periodo)
+                    },
+                  })
                 }}
               />
             </section>
@@ -258,18 +289,30 @@ export function LecturasPage() {
   )
 }
 
+function importeLectura(row: LecturaListItem, valoresM3: ValorM3Activo[]) {
+  const tarifa = valoresM3.find((item) => item.anio === row.anio) ?? null
+  if (!tarifa || tarifa.valor <= 0) return { tarifa: null, monto: null }
+  return { tarifa, monto: roundMoney(Number(row.volumen_m3) * tarifa.valor) }
+}
+
 function LecturasDelPredio({
   loading,
   error,
   records,
+  valoresM3,
   selectedId,
+  deletingId,
   onSelect,
+  onDelete,
 }: {
   loading: boolean
   error: string | null
   records: LecturaListItem[]
+  valoresM3: ValorM3Activo[]
   selectedId?: string
+  deletingId?: string
   onSelect: (id: string) => void
+  onDelete: (row: LecturaListItem) => void
 }) {
   if (loading) return <p className="text-sm text-muted-foreground">Cargando lecturas…</p>
   if (error) {
@@ -296,7 +339,27 @@ function LecturasDelPredio({
         if (key === 'volumen') {
           return <span className="tabular-nums">{formatVolume(row.volumen_m3)}</span>
         }
-        return <EditRowButton editing={selectedId === row.id} onEdit={() => onSelect(row.id)} />
+        if (key === 'tarifa' || key === 'monto') {
+          const importe = importeLectura(row, valoresM3)
+          const texto =
+            key === 'tarifa'
+              ? importe.tarifa
+                ? `${formatMoney(importe.tarifa.valor)} · ${importe.tarifa.nombre}`
+                : 'Sin tarifa'
+              : importe.monto == null
+                ? '—'
+                : formatMoney(importe.monto)
+          return <span className="tabular-nums">{texto}</span>
+        }
+        return (
+          <span className="inline-flex justify-end gap-1">
+            <EditRowButton editing={selectedId === row.id} onEdit={() => onSelect(row.id)} />
+            <DeleteRowButton
+              deleting={deletingId === row.id}
+              onDelete={() => onDelete(row)}
+            />
+          </span>
+        )
       }}
     />
   )

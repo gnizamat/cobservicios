@@ -1337,6 +1337,12 @@ export type Database = {
         }
         Returns: Json
       }
+      eliminar_lectura: {
+        Args: {
+          p_id: string
+        }
+        Returns: undefined
+      }
       buscar_predio_ids: {
         Args: {
           p_search: string

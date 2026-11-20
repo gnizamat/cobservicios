@@ -312,6 +312,11 @@ export async function saveLectura(
   }
 }
 
+export async function deleteLectura(id: string): Promise<void> {
+  const { error } = await supabase.rpc('eliminar_lectura', { p_id: id })
+  if (error) throw asHidrometriaError(error)
+}
+
 export async function listVolumenes(): Promise<VolumenListItem[]> {
   const { data, error } = await supabase
     .from('hid_volumenes_sin_lectura')

@@ -23,6 +23,30 @@ export function EditRowButton({
   )
 }
 
+export function DeleteRowButton({
+  deleting,
+  onDelete,
+}: {
+  deleting: boolean
+  onDelete: () => void
+}) {
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      className="h-7 px-2 text-destructive hover:text-destructive"
+      disabled={deleting}
+      onClick={(event) => {
+        event.stopPropagation()
+        onDelete()
+      }}
+    >
+      {deleting ? 'Eliminando' : 'Eliminar'}
+    </Button>
+  )
+}
+
 export function SaveNotice({
   error,
   saved,

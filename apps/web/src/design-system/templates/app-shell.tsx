@@ -21,10 +21,10 @@ export function AppShell({ children, className }: AppShellProps) {
   )
 
   return (
-    <div className="flex min-h-screen bg-background md:gap-3 md:p-3">
+    <div className="flex h-dvh overflow-hidden bg-background md:gap-3 md:p-3">
       <div
         className={cn(
-          'fixed inset-y-3 left-3 z-30 h-[calc(100vh-1.5rem)] transition-transform duration-200 md:sticky md:top-3 md:inset-auto md:z-auto md:h-[calc(100vh-1.5rem)] md:translate-x-0 md:self-start',
+          'fixed inset-y-3 left-3 z-30 h-[calc(100dvh-1.5rem)] shrink-0 transition-transform duration-200 md:static md:z-auto md:h-full',
           mobileOpen ? 'translate-x-0' : '-translate-x-[120%] md:translate-x-0',
         )}
       >
@@ -50,7 +50,7 @@ export function AppShell({ children, className }: AppShellProps) {
         />
       ) : null}
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col md:min-h-[calc(100vh-1.5rem)] md:rounded-3xl md:border md:border-border md:bg-card md:shadow-[var(--shadow-sm)]">
+      <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden md:rounded-3xl md:border md:border-border md:bg-card md:shadow-[var(--shadow-sm)]">
         <AppHeader
           title={current?.label ?? 'COBSERVICIOS'}
           subtitle={current?.description}
@@ -64,9 +64,11 @@ export function AppShell({ children, className }: AppShellProps) {
             setMobileOpen((value) => !value)
           }}
         />
-        <main className={cn('mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6', className)}>
-          {children}
-        </main>
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <main className={cn('mx-auto w-full max-w-6xl px-4 py-6 sm:px-6', className)}>
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   )

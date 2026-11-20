@@ -1,4 +1,5 @@
 ﻿export {
+  deleteLectura,
   listControles,
   listEstructuras,
   listValoresVolumen,
@@ -28,6 +29,7 @@ export type {
   VolumenListItem,
 } from './hidrometria-api'
 export {
+  useDeleteLectura,
   useControles,
   useEstructuras,
   useLecturas,
