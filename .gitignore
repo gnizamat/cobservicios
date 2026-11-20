@@ -25,6 +25,7 @@ Desktop.ini
 *.bak
 *.sdf
 apps/web/scripts/.migrate-cache/
+apps/web/supabase/seeds/usuarios_predios.sql
 
 # Compilación e instaladores del legado VB.NET
 **/bin/

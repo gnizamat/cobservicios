@@ -319,11 +319,11 @@ export const mainNav: NavSection[] = [
       },
       {
         id: 'sistema',
-        label: 'Sistema',
+        label: 'Configuración del sistema',
         path: '/configuracion/sistema',
         icon: Cog,
         status: 'ready',
-        description: 'JASS, usuarios, roles, tablero y marca de la plataforma',
+        description: 'JASS, usuarios, roles, permisos, tablero y marca de la plataforma',
       },
       {
         id: 'config-cobranza',

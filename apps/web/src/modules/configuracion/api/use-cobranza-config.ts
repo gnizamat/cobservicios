@@ -76,7 +76,10 @@ export function useSaveCajaConfig() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: ({ id, input }: { id: string | null; input: CajaInput }) => saveCaja(id, input),
-    onSuccess: () => client.invalidateQueries({ queryKey: organizacionQueryKeys.cajas }),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: organizacionQueryKeys.cajas })
+      client.invalidateQueries({ queryKey: ['cobranza', 'cajas'] })
+    },
   })
 }
 

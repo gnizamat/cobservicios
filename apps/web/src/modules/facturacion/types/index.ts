@@ -37,6 +37,7 @@ export interface FacturacionGenerada {
   monto: number
   fecha: string
   deudas: number
+  tienePagos: boolean
 }
 
 export interface GenerarFacturacionResultado {

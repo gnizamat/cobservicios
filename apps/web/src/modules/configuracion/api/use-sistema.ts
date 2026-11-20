@@ -3,7 +3,9 @@ import {
   actualizarUsuarioSistema,
   crearUsuarioSistema,
   getMarcaNombre,
+  getMisPermisos,
   guardarMarcaNombre,
+  guardarPermisosRol,
   listRoles,
   listUsuariosSistema,
 } from '@/modules/configuracion/api/sistema-api'
@@ -39,6 +41,28 @@ export function useCrearUsuarioSistema() {
     mutationFn: crearUsuarioSistema,
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: organizacionQueryKeys.usuariosSistema })
+    },
+  })
+}
+
+export function useGuardarPermisosRol() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: guardarPermisosRol,
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: organizacionQueryKeys.roles })
+      await client.invalidateQueries({ queryKey: organizacionQueryKeys.misPermisos })
+    },
+  })
+}
+
+export function useMisPermisos() {
+  return useQuery({
+    queryKey: organizacionQueryKeys.misPermisos,
+    queryFn: async () => {
+      const acceso = await getMisPermisos()
+      if (!acceso) return { codigo: '', permisos: [], conocido: false }
+      return { ...acceso, conocido: true }
     },
   })
 }

@@ -11,7 +11,9 @@ export {
   useActualizarUsuarioSistema,
   useCrearUsuarioSistema,
   useGuardarMarca,
+  useGuardarPermisosRol,
   useMarca,
+  useMisPermisos,
   useRolesSistema,
   useUsuariosSistema,
 } from './use-sistema'

@@ -1,4 +1,5 @@
 ﻿export {
+  eliminarFacturacion,
   generarFacturacion,
   listDeudasAFacturar,
   listFacturacionesGeneradas,
@@ -9,6 +10,7 @@
 export type { FiltroFacturacion } from './facturacion-api'
 export {
   useDeudasAFacturar,
+  useEliminarFacturacion,
   useFacturacionesGeneradas,
   useGenerarFacturacion,
   useTarifasFacturacion,

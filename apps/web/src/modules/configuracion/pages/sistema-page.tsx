@@ -10,6 +10,7 @@ import {
   useOrganizacion,
   useRolesSistema,
 } from '@/modules/configuracion/api'
+import { RolesPermisosPanel } from '@/modules/configuracion/components/roles-permisos-panel'
 import { SistemaUsuariosPanel } from '@/modules/configuracion/components/sistema-usuarios-panel'
 import { cn } from '@/shared/lib/utils'
 
@@ -77,7 +78,7 @@ export function SistemaPage() {
         <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)]">
           {seccion === 'jass' ? <JassPanel /> : null}
           {seccion === 'usuarios' ? <SistemaUsuariosPanel /> : null}
-          {seccion === 'roles' ? <RolesPanel /> : null}
+          {seccion === 'roles' ? <RolesPermisosPanel /> : null}
           {seccion === 'tablero' ? <TableroPanel /> : null}
           {seccion === 'marca' ? <MarcaPanel /> : null}
         </div>
@@ -111,43 +112,6 @@ function JassPanel() {
           <Dato etiqueta="Dirección" valor={jass.direccion || '—'} />
         </dl>
       ) : null}
-    </section>
-  )
-}
-
-function RolesPanel() {
-  const roles = useRolesSistema()
-
-  return (
-    <section>
-      <h2 className="text-lg font-semibold text-foreground">Roles y permisos</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Cada rol define qué módulos de la plataforma puede usar una cuenta.
-      </p>
-      {roles.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Cargando roles…</p> : null}
-      {roles.isError ? (
-        <p role="alert" className="mt-4 text-sm text-destructive">
-          {(roles.error as Error).message}
-        </p>
-      ) : null}
-      <div className="mt-4 space-y-3">
-        {(roles.data ?? []).map((rol) => (
-          <article key={rol.id} className="rounded-xl border border-border p-3">
-            <h3 className="font-medium text-foreground">{rol.nombre}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{rol.descripcion}</p>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {rol.permisos.map((permiso) => (
-                <li
-                  key={permiso}
-                  className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground"
-                >
-                  {permiso}
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
     </section>
   )
 }

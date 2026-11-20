@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Printer } from 'lucide-react'
+import { Printer, Trash2 } from 'lucide-react'
 import { Button, Icon, Select } from '@/design-system/atoms'
 import { PageHeader } from '@/design-system/molecules'
 import { AppShell } from '@/design-system/templates'
@@ -10,6 +10,7 @@ import {
   useTarifasFacturacion,
   useTerritorioFacturacion,
 } from '@/modules/facturacion/api'
+import { EliminarFacturacionDialog } from '@/modules/facturacion/components/eliminar-facturacion-dialog'
 import { ReciboDialog } from '@/modules/facturacion/components/recibo-dialog'
 import { formatMoney, MESES, mesLabel, predioFacturaLabel } from '@/modules/facturacion/labels'
 import type { DeudaAFacturar, FacturacionGenerada } from '@/modules/facturacion/types'
@@ -79,6 +80,7 @@ export function FacturacionPage() {
   const [picked, setPicked] = useState<string[] | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [reciboId, setReciboId] = useState<string | null>(null)
+  const [eliminar, setEliminar] = useState<FacturacionGenerada | null>(null)
   const territorio = useTerritorioFacturacion()
   const tarifas = useTarifasFacturacion()
   const anio =
@@ -263,9 +265,20 @@ export function FacturacionPage() {
           rows={generadas.data ?? []}
           periodo={periodo}
           onImprimir={setReciboId}
+          onEliminar={setEliminar}
         />
       )}
       {reciboId ? <ReciboDialog id={reciboId} onClose={() => setReciboId(null)} /> : null}
+      {eliminar ? (
+        <EliminarFacturacionDialog
+          factura={eliminar}
+          onClose={() => setEliminar(null)}
+          onEliminada={(mensaje) => {
+            setAviso(mensaje)
+            setEliminar(null)
+          }}
+        />
+      ) : null}
     </AppShell>
   )
 }
@@ -357,12 +370,14 @@ function GeneradasTable({
   rows,
   periodo,
   onImprimir,
+  onEliminar,
 }: {
   loading: boolean
   error: string | null
   rows: FacturacionGenerada[]
   periodo: string
   onImprimir: (id: string) => void
+  onEliminar: (factura: FacturacionGenerada) => void
 }) {
   if (loading) return <p className="text-sm text-muted-foreground">Cargando facturaciones de {periodo}…</p>
   if (error) {
@@ -393,7 +408,7 @@ function GeneradasTable({
               <th className="px-2.5 py-2 text-right font-semibold">Deudas</th>
               <th className="px-2.5 py-2 text-right font-semibold">Monto</th>
               <th className="px-2.5 py-2 font-semibold">Fecha</th>
-              <th className="px-2.5 py-2 font-semibold">Recibo</th>
+              <th className="px-2.5 py-2 font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -407,16 +422,39 @@ function GeneradasTable({
                 <td className="px-2.5 py-1.5 text-right">{formatMoney(row.monto)}</td>
                 <td className="px-2.5 py-1.5">{row.fecha}</td>
                 <td className="px-2.5 py-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    aria-label={`Imprimir recibo de ${row.predio}`}
-                    onClick={() => onImprimir(row.id)}
-                  >
-                    <Icon icon={Printer} size={14} />
-                    Imprimir
-                  </Button>
+                  <span className="flex flex-wrap gap-1">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      aria-label={`Imprimir recibo de ${row.numero}`}
+                      onClick={() => onImprimir(row.id)}
+                    >
+                      <Icon icon={Printer} size={14} />
+                      Imprimir
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      disabled={row.tienePagos}
+                      aria-label={
+                        row.tienePagos
+                          ? `No se puede eliminar ${row.numero} porque tiene pagos`
+                          : `Eliminar facturación ${row.numero}`
+                      }
+                      title={
+                        row.tienePagos
+                          ? 'No se puede eliminar: las deudas están vinculadas a pagos'
+                          : 'Eliminar facturación'
+                      }
+                      onClick={() => onEliminar(row)}
+                    >
+                      <Icon icon={Trash2} size={14} />
+                      Eliminar
+                    </Button>
+                  </span>
                 </td>
               </tr>
             ))}

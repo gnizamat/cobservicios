@@ -75,7 +75,23 @@ function mapGenerada(row: Record<string, Json | undefined>): FacturacionGenerada
     monto: num(row.monto),
     fecha: text(row.fecha),
     deudas: num(row.deudas),
+    tienePagos: row.tiene_pagos === true,
   }
+}
+
+export async function eliminarFacturacion(input: {
+  facturacionId: string
+  clave: string
+  motivo: string
+}): Promise<{ id: string; numero: string }> {
+  const { data, error } = await supabase.rpc('eliminar_facturacion', {
+    p_facturacion_id: input.facturacionId,
+    p_clave: input.clave,
+    p_motivo: input.motivo,
+  })
+  if (error) throw asFacturacionError(error)
+  const payload = data && typeof data === 'object' && !Array.isArray(data) ? data : {}
+  return { id: text(payload.id), numero: text(payload.numero) }
 }
 
 export async function listTerritorioFacturacion(): Promise<TerritorioFacturacion> {

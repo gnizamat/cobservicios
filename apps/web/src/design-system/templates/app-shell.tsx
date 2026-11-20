@@ -1,8 +1,10 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AppHeader } from '@/design-system/organisms'
+import { useMisPermisos } from '@/modules/configuracion'
 import { AppSidebar } from '@/modules/navegacion/components/app-sidebar'
-import { findNavItemByPath } from '@/modules/navegacion/menu'
+import { findNavItemByPath, flattenNavItems, pathIsCurrent } from '@/modules/navegacion/menu'
+import { opcionPermitida } from '@/modules/navegacion/permisos'
 import { cn } from '@/shared/lib/utils'
 
 export interface AppShellProps {
@@ -15,9 +17,23 @@ export function AppShell({ children, className }: AppShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
 
+  const acceso = useMisPermisos()
   const current = useMemo(
     () => findNavItemByPath(location.pathname),
     [location.pathname],
+  )
+  const protegida = useMemo(
+    () =>
+      flattenNavItems().find(
+        (item) => item.path && pathIsCurrent(location.pathname, item.path),
+      ),
+    [location.pathname],
+  )
+  const bloqueada = Boolean(
+    protegida &&
+      protegida.id !== 'dashboard' &&
+      acceso.data?.conocido &&
+      !opcionPermitida(acceso.data, protegida.id),
   )
 
   return (
@@ -66,7 +82,13 @@ export function AppShell({ children, className }: AppShellProps) {
         />
         <div className="min-h-0 flex-1 overflow-y-auto">
           <main className={cn('mx-auto w-full max-w-6xl px-4 py-6 sm:px-6', className)}>
-            {children}
+            {bloqueada ? (
+              <p role="alert" className="text-sm text-muted-foreground">
+                Tu rol no tiene permiso para abrir esta opción.
+              </p>
+            ) : (
+              children
+            )}
           </main>
         </div>
       </div>

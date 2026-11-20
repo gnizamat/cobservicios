@@ -739,17 +739,36 @@ export type Database = {
         Row: {
           id: string
           nombre: string
+          sector_id: string | null
+          usuario_id: string | null
           activa: boolean
           created_at: string
         }
         Insert: {
           id?: string
           nombre: string
+          sector_id?: string | null
+          usuario_id?: string | null
           activa?: boolean
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['cob_cajas']['Insert']>
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'cob_cajas_sector_id_fkey'
+            columns: ['sector_id']
+            isOneToOne: false
+            referencedRelation: 'cat_sectores'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'cob_cajas_usuario_id_fkey'
+            columns: ['usuario_id']
+            isOneToOne: false
+            referencedRelation: 'sys_usuario_perfil'
+            referencedColumns: ['user_id']
+          },
+        ]
       }
       cob_pagos: {
         Row: {
@@ -1062,6 +1081,7 @@ export type Database = {
           user_id: string
           nombre: string
           rol_id: string
+          sector_id: string | null
           activo: boolean
           created_at: string
           updated_at: string
@@ -1070,6 +1090,7 @@ export type Database = {
           user_id: string
           nombre?: string
           rol_id: string
+          sector_id?: string | null
           activo?: boolean
           created_at?: string
           updated_at?: string
@@ -1297,6 +1318,14 @@ export type Database = {
         }
         Returns: Json
       }
+      eliminar_facturacion: {
+        Args: {
+          p_facturacion_id: string
+          p_clave: string
+          p_motivo: string
+        }
+        Returns: Json
+      }
       listar_usuarios_sistema: {
         Args: Record<string, never>
         Returns: Json
@@ -1307,6 +1336,7 @@ export type Database = {
           p_nombre: string
           p_rol_id: string
           p_activo: boolean
+          p_sector_id: string | null
         }
         Returns: Json
       }
@@ -1315,6 +1345,17 @@ export type Database = {
           p_nombre: string
         }
         Returns: string
+      }
+      mis_permisos: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      guardar_permisos_rol: {
+        Args: {
+          p_rol_id: string
+          p_permisos: string[]
+        }
+        Returns: undefined
       }
       generar_padron_asamblea: {
         Args: {

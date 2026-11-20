@@ -11,8 +11,15 @@ import {
   useUsuariosSistema,
 } from '@/modules/configuracion/api'
 import type { UsuarioSistema } from '@/modules/configuracion/api'
+import { useSectores } from '@/modules/catalogo'
 import { useAuth } from '@/modules/auth'
 import { cn } from '@/shared/lib/utils'
+
+const SEDE_CENTRAL = ''
+
+function etiquetaCentro(sectorId: string | null, sector: string) {
+  return sectorId ? sector || 'Centro poblado' : 'Sede central'
+}
 
 const PAGE_SIZE = 20
 
@@ -34,7 +41,8 @@ export function SistemaUsuariosPanel() {
       (row) =>
         row.email.toLowerCase().includes(term) ||
         row.nombre.toLowerCase().includes(term) ||
-        row.rol.toLowerCase().includes(term),
+        row.rol.toLowerCase().includes(term) ||
+        etiquetaCentro(row.sectorId, row.sector).toLowerCase().includes(term),
     )
   }, [search, usuarios.data])
   const pageRows = filtrados.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -45,7 +53,7 @@ export function SistemaUsuariosPanel() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Gestión de usuarios</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Cuentas que entran a la plataforma. Cada una pertenece a esta JASS y tiene un rol.
+            Cuentas que entran a la plataforma. Cada una tiene un rol y un centro poblado, o pertenece a la sede central y administra todos.
           </p>
         </div>
         <Button type="button" onClick={() => setCrear(true)}>
@@ -86,6 +94,7 @@ export function SistemaUsuariosPanel() {
               { key: 'email', header: 'Email' },
               { key: 'nombre', header: 'Nombre' },
               { key: 'jass', header: 'JASS' },
+              { key: 'centro', header: 'Centro poblado' },
               { key: 'rol', header: 'Rol' },
               { key: 'estado', header: 'Estado' },
               { key: 'acciones', header: 'Acciones', className: 'text-right' },
@@ -97,6 +106,7 @@ export function SistemaUsuariosPanel() {
               if (key === 'email') return <span className="font-medium">{row.email}</span>
               if (key === 'nombre') return row.nombre || '—'
               if (key === 'jass') return jass
+              if (key === 'centro') return etiquetaCentro(row.sectorId, row.sector)
               if (key === 'rol') {
                 return (
                   <span className="inline-flex rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-medium text-primary">
@@ -165,6 +175,7 @@ function EstadoUsuarioButton({ usuario, propio }: { usuario: UsuarioSistema; pro
           nombre: usuario.nombre,
           rolId: usuario.rolId,
           activo: !usuario.activo,
+          sectorId: usuario.sectorId,
         })
       }
     >
@@ -180,13 +191,23 @@ function CrearUsuarioDialog({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rolCodigo, setRolCodigo] = useState('operador')
-  const puede = nombre.trim().length >= 2 && email.includes('@') && password.length >= 6 && rolCodigo
+  const [sectorId, setSectorId] = useState(SEDE_CENTRAL)
+  const rol = (roles.data ?? []).find((item) => item.codigo === rolCodigo)
+  const puede =
+    nombre.trim().length >= 2 && email.includes('@') && password.length >= 6 && Boolean(rol)
 
   function enviar(event: FormEvent) {
     event.preventDefault()
-    if (!puede) return
+    if (!rol) return
     crear.mutate(
-      { nombre, email, password, rolCodigo },
+      {
+        nombre,
+        email,
+        password,
+        rolId: rol.id,
+        rolCodigo: rol.codigo,
+        sectorId: sectorId || null,
+      },
       {
         onSuccess: () => {
           setPassword('')
@@ -226,13 +247,14 @@ function CrearUsuarioDialog({ onClose }: { onClose: () => void }) {
             onChange={(event) => setRolCodigo(event.target.value)}
             className="h-8 text-sm"
           >
-            {(roles.data ?? []).map((rol) => (
-              <option key={rol.id} value={rol.codigo}>
-                {rol.nombre}
+            {(roles.data ?? []).map((item) => (
+              <option key={item.id} value={item.codigo}>
+                {item.nombre}
               </option>
             ))}
           </Select>
         </Campo>
+        <CentroPobladoField value={sectorId} onChange={setSectorId} />
         {crear.isError ? <Alerta mensaje={(crear.error as Error).message} /> : null}
         <Acciones pending={crear.isPending} disabled={!puede} onClose={onClose} etiqueta="Crear usuario" />
       </form>
@@ -245,11 +267,12 @@ function EditarUsuarioDialog({ usuario, onClose }: { usuario: UsuarioSistema; on
   const actualizar = useActualizarUsuarioSistema()
   const [nombre, setNombre] = useState(usuario.nombre)
   const [rolId, setRolId] = useState(usuario.rolId)
+  const [sectorId, setSectorId] = useState(usuario.sectorId ?? SEDE_CENTRAL)
 
   function enviar(event: FormEvent) {
     event.preventDefault()
     actualizar.mutate(
-      { id: usuario.id, nombre, rolId, activo: usuario.activo },
+      { id: usuario.id, nombre, rolId, activo: usuario.activo, sectorId: sectorId || null },
       { onSuccess: onClose },
     )
   }
@@ -270,6 +293,7 @@ function EditarUsuarioDialog({ usuario, onClose }: { usuario: UsuarioSistema; on
             ))}
           </Select>
         </Campo>
+        <CentroPobladoField value={sectorId} onChange={setSectorId} />
         {actualizar.isError ? <Alerta mensaje={(actualizar.error as Error).message} /> : null}
         <Acciones
           pending={actualizar.isPending}
@@ -303,6 +327,31 @@ function Dialog({
         {children}
       </div>
     </div>
+  )
+}
+
+function CentroPobladoField({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const sectores = useSectores()
+  const opciones = [...(sectores.data ?? [])].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+
+  return (
+    <Campo label="Centro poblado">
+      <Select value={value} onChange={(event) => onChange(event.target.value)} className="h-8 text-sm">
+        <option value={SEDE_CENTRAL}>Sede central — todos los centros poblados</option>
+        {opciones.map((sector) => (
+          <option key={sector.id} value={sector.id}>
+            {sector.nombre}
+          </option>
+        ))}
+      </Select>
+      {sectores.isError ? <Alerta mensaje={(sectores.error as Error).message} /> : null}
+    </Campo>
   )
 }
 

@@ -19,13 +19,17 @@ export interface UsuarioSistema {
   rol: string
   rolId: string
   rolCodigo: string
+  sectorId: string | null
+  sector: string
 }
 
 export interface NuevoUsuarioSistema {
   nombre: string
   email: string
   password: string
+  rolId: string
   rolCodigo: string
+  sectorId: string | null
 }
 
 function asSistemaError(error: PostgrestError) {
@@ -72,6 +76,8 @@ export async function listUsuariosSistema(): Promise<UsuarioSistema[]> {
     rol: text(row.rol),
     rolId: text(row.rol_id),
     rolCodigo: text(row.rol_codigo),
+    sectorId: text(row.sector_id) || null,
+    sector: text(row.sector),
   }))
 }
 
@@ -80,12 +86,14 @@ export async function actualizarUsuarioSistema(input: {
   nombre: string
   rolId: string
   activo: boolean
+  sectorId: string | null
 }) {
   const { error } = await supabase.rpc('actualizar_usuario_sistema', {
     p_user_id: input.id,
     p_nombre: input.nombre.trim(),
     p_rol_id: input.rolId,
     p_activo: input.activo,
+    p_sector_id: input.sectorId,
   })
   if (error) throw asSistemaError(error)
 }
@@ -119,6 +127,14 @@ export async function crearUsuarioSistema(input: NuevoUsuarioSistema) {
   if (!data.user) {
     throw new Error('No se pudo crear el usuario.')
   }
+
+  await actualizarUsuarioSistema({
+    id: data.user.id,
+    nombre: input.nombre,
+    rolId: input.rolId,
+    activo: true,
+    sectorId: input.sectorId,
+  })
 }
 
 export async function getMarcaNombre(): Promise<string> {
@@ -129,6 +145,23 @@ export async function getMarcaNombre(): Promise<string> {
     .maybeSingle()
   if (error) throw asSistemaError(error)
   return data?.value?.trim() ?? ''
+}
+
+export async function guardarPermisosRol(input: { rolId: string; permisos: string[] }) {
+  const { error } = await supabase.rpc('guardar_permisos_rol', {
+    p_rol_id: input.rolId,
+    p_permisos: input.permisos,
+  })
+  if (error) throw asSistemaError(error)
+}
+
+export async function getMisPermisos(): Promise<{ codigo: string; permisos: string[] } | null> {
+  const { data, error } = await supabase.rpc('mis_permisos')
+  if (error) throw asSistemaError(error)
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null
+  const row = data as Record<string, Json | undefined>
+  const permisos = Array.isArray(row.permisos) ? row.permisos.map((item) => String(item)) : []
+  return { codigo: text(row.codigo), permisos }
 }
 
 export async function guardarMarcaNombre(nombre: string) {

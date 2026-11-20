@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { FilterSelect } from '@/design-system/molecules'
 import { DataTable } from '@/design-system/organisms'
 import { useCalles, useSaveCalle, useSectores } from '@/modules/catalogo/api'
 import { CalleForm } from '@/modules/catalogo/components/calle-form'
@@ -15,33 +16,56 @@ const columns = [
 
 export function CallesPage() {
   const [searchInput, setSearchInput] = useState('')
+  const [sectorId, setSectorId] = useState('all')
   const search = useDebouncedValue(searchInput.trim(), 200)
   const calles = useCalles()
   const sectores = useSectores()
   const save = useSaveCalle()
+  const sectorOptions = useMemo(
+    () => [
+      { value: 'all', label: 'Todos los centros poblados' },
+      ...[...(sectores.data ?? [])]
+        .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+        .map((sector) => ({ value: sector.id, label: sector.nombre })),
+    ],
+    [sectores.data],
+  )
   const records = useMemo(
     () =>
-      (calles.data ?? []).filter((row) =>
-        includesSearch(search, [
-          row.nombre,
-          row.referencia,
-          row.sector?.nombre,
-          row.sector?.codigo,
-        ]),
+      (calles.data ?? []).filter(
+        (row) =>
+          (sectorId === 'all' || row.sector_id === sectorId) &&
+          includesSearch(search, [
+            row.nombre,
+            row.referencia,
+            row.sector?.nombre,
+            row.sector?.codigo,
+          ]),
       ),
-    [calles.data, search],
+    [calles.data, search, sectorId],
   )
   const selection = useRecordSelection(records)
 
   return (
     <CatalogWorkspace
       title="Calles"
-      description="Calles del territorio, con el sector y la referencia cargados en el formulario."
+      description="Calles del territorio. Filtrá por centro poblado o mirá las de todos."
       search={searchInput}
       onSearchChange={setSearchInput}
       searchPlaceholder="Calle, sector o referencia…"
-      hasActiveFilters={Boolean(searchInput.trim())}
-      onResetFilters={() => setSearchInput('')}
+      filters={
+        <FilterSelect
+          label="Centro poblado"
+          value={sectorOptions.some((option) => option.value === sectorId) ? sectorId : 'all'}
+          options={sectorOptions}
+          onChange={setSectorId}
+        />
+      }
+      hasActiveFilters={Boolean(searchInput.trim()) || sectorId !== 'all'}
+      onResetFilters={() => {
+        setSearchInput('')
+        setSectorId('all')
+      }}
       onNew={selection.startCreate}
       formTitle={selection.selected ? 'Calle cargada' : 'Nueva calle'}
       formDescription={

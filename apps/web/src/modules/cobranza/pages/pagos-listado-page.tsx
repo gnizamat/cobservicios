@@ -9,6 +9,7 @@ import type { PagoListado } from '@/modules/cobranza/api'
 import { AnularPagoDialog } from '@/modules/cobranza/components/anular-pago-dialog'
 import { ReciboPagoDialog } from '@/modules/cobranza/components/recibo-pago-dialog'
 import {
+  etiquetaCaja,
   fechaHoy,
   formatFecha,
   formatMoney,
@@ -64,7 +65,10 @@ export function PagosListado() {
   const cajaOptions = useMemo(
     () => [
       { value: 'all', label: 'Todas las cajas' },
-      ...(cajas.data ?? []).map((caja) => ({ value: caja.id, label: caja.nombre })),
+      ...(cajas.data ?? []).map((caja) => ({
+        value: caja.id,
+        label: etiquetaCaja(caja.nombre, caja.sector, caja.usuario),
+      })),
     ],
     [cajas.data],
   )

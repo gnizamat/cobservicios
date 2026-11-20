@@ -191,6 +191,10 @@ export async function getCobranzaPredio(predioId: string): Promise<CobranzaPredi
 export interface CajaCobranza {
   id: string
   nombre: string
+  sectorId: string | null
+  sector: string
+  usuarioId: string | null
+  usuario: string
 }
 
 export interface PagoListado {
@@ -227,11 +231,25 @@ export interface FiltroPagos {
 export async function listCajas(): Promise<CajaCobranza[]> {
   const { data, error } = await supabase
     .from('cob_cajas')
-    .select('id, nombre')
+    .select(
+      'id, nombre, sector_id, usuario_id, sector:cat_sectores(nombre), responsable:sys_usuario_perfil(nombre)',
+    )
     .eq('activa', true)
     .order('nombre')
   if (error) throw asCobranzaError(error)
-  return data ?? []
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    nombre: row.nombre,
+    sectorId: row.sector_id,
+    sector: nombreRelacion(row.sector),
+    usuarioId: row.usuario_id,
+    usuario: nombreRelacion(row.responsable),
+  }))
+}
+
+function nombreRelacion(value: { nombre: string } | { nombre: string }[] | null) {
+  if (!value) return ''
+  return Array.isArray(value) ? (value[0]?.nombre ?? '') : value.nombre
 }
 
 export async function listPagos(filtros: FiltroPagos): Promise<PagoListado[]> {

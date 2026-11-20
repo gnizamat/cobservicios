@@ -14,6 +14,7 @@ import type { FacturaCobro, PredioCobranza } from '@/modules/cobranza/api'
 import { ReciboPagoDialog } from '@/modules/cobranza/components/recibo-pago-dialog'
 import { PagosListado } from '@/modules/cobranza/pages/pagos-listado-page'
 import {
+  etiquetaCaja,
   fechaHoy,
   formatFecha,
   formatMoney,
@@ -379,7 +380,7 @@ function CobroPanel({
           >
             {(cajas.data ?? []).map((caja) => (
               <option key={caja.id} value={caja.id}>
-                {caja.nombre}
+                {etiquetaCaja(caja.nombre, caja.sector, caja.usuario)}
               </option>
             ))}
           </Select>

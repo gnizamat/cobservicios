@@ -4,6 +4,8 @@ import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { FormField, StatusBadge } from '@/design-system/molecules'
 import { DataTable, type DataTableColumn } from '@/design-system/organisms'
 import { FormLayout } from '@/design-system/templates'
+import { useSectores } from '@/modules/catalogo'
+import { useUsuariosSistema } from '@/modules/configuracion/api/use-sistema'
 import {
   useBancos,
   useCajasConfig,
@@ -26,6 +28,7 @@ interface Fila {
   nombre: string
   estado: EstadoRegistro
   detalle: string
+  extra?: string
 }
 
 function useSeleccion<T extends { id: string }>(rows: T[]) {
@@ -458,14 +461,34 @@ function BancoForm({
   )
 }
 
+const SEDE_CENTRAL = ''
+
+function etiquetaCentro(sectorId: string | null, sectores: Array<{ id: string; nombre: string }>) {
+  if (!sectorId) return 'Sede central'
+  return sectores.find((sector) => sector.id === sectorId)?.nombre ?? 'Sede central'
+}
+
+function etiquetaUsuario(
+  usuarioId: string | null,
+  usuarios: Array<{ id: string; nombre: string; email: string }>,
+) {
+  if (!usuarioId) return '—'
+  const usuario = usuarios.find((item) => item.id === usuarioId)
+  if (!usuario) return '—'
+  return usuario.nombre || usuario.email
+}
+
 export function CajasPanel() {
   const query = useCajasConfig()
+  const sectores = useSectores()
+  const usuarios = useUsuariosSistema()
   const save = useSaveCajaConfig()
   const filas: Fila[] = (query.data ?? []).map((row) => ({
     id: row.id,
     nombre: row.nombre,
     estado: row.activa ? 'activo' : 'inactivo',
-    detalle: '',
+    detalle: etiquetaCentro(row.sector_id, sectores.data ?? []),
+    extra: etiquetaUsuario(row.usuario_id, usuarios.data ?? []),
   }))
   const seleccion = useSeleccion(query.data ?? [])
   const actual = seleccion.selected
@@ -477,19 +500,26 @@ export function CajasPanel() {
       error={query.isError ? (query.error as Error).message : null}
       columns={[
         { key: 'nombre', header: 'Caja' },
+        { key: 'detalle', header: 'Centro poblado' },
+        { key: 'extra', header: 'Usuario' },
         { key: 'estado', header: 'Estado', className: 'w-24' },
       ]}
       vacio="Todavía no hay cajas."
       selectedId={actual?.id}
       onSelect={(row) => seleccion.elegir(row.id)}
       onNew={seleccion.crear}
-      renderCell={(row, key) =>
-        key === 'estado' ? <StatusBadge status={row.estado} /> : row.nombre
-      }
+      renderCell={(row, key) => {
+        if (key === 'estado') return <StatusBadge status={row.estado} />
+        if (key === 'detalle') return row.detalle
+        if (key === 'extra') return row.extra || '—'
+        return row.nombre
+      }}
       formulario={
         <CajaForm
           key={actual?.id ?? 'nuevo'}
           nombreInicial={actual?.nombre ?? ''}
+          sectorInicial={actual?.sector_id ?? SEDE_CENTRAL}
+          usuarioInicial={actual?.usuario_id ?? ''}
           activaInicial={actual?.activa ?? true}
           nuevo={!actual}
           guardando={save.isPending}
@@ -508,6 +538,8 @@ export function CajasPanel() {
 
 function CajaForm({
   nombreInicial,
+  sectorInicial,
+  usuarioInicial,
   activaInicial,
   nuevo,
   guardando,
@@ -515,15 +547,31 @@ function CajaForm({
   onSave,
 }: {
   nombreInicial: string
+  sectorInicial: string
+  usuarioInicial: string
   activaInicial: boolean
   nuevo: boolean
   guardando: boolean
   error: string | null
-  onSave: (input: { nombre: string; activa: boolean }) => void
+  onSave: (input: {
+    nombre: string
+    activa: boolean
+    sector_id: string | null
+    usuario_id: string | null
+  }) => void
 }) {
+  const sectores = useSectores()
+  const usuarios = useUsuariosSistema()
   const [nombre, setNombre] = useState(nombreInicial)
+  const [sectorId, setSectorId] = useState(sectorInicial)
+  const [usuarioId, setUsuarioId] = useState(usuarioInicial)
   const [activa, setActiva] = useState<EstadoRegistro>(activaInicial ? 'activo' : 'inactivo')
   const [local, setLocal] = useState<string | null>(null)
+  const opciones = [...(sectores.data ?? [])].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+  const personas = [...(usuarios.data ?? [])].sort((a, b) => {
+    if (a.activo !== b.activo) return a.activo ? -1 : 1
+    return (a.nombre || a.email).localeCompare(b.nombre || b.email, 'es')
+  })
 
   return (
     <FormLayout
@@ -537,8 +585,17 @@ function CajaForm({
               setLocal('Indicá el nombre de la caja.')
               return
             }
+            if (!usuarioId) {
+              setLocal('Elegí el usuario de la caja.')
+              return
+            }
             setLocal(null)
-            onSave({ nombre: nombre.trim(), activa: activa === 'activo' })
+            onSave({
+              nombre: nombre.trim(),
+              activa: activa === 'activo',
+              sector_id: sectorId || null,
+              usuario_id: usuarioId,
+            })
           }}
         />
       }
@@ -551,6 +608,38 @@ function CajaForm({
       <FormField label="Caja" htmlFor="caja-nombre">
         <Input id="caja-nombre" value={nombre} onChange={(event) => setNombre(event.target.value)} />
       </FormField>
+      <FormField label="Centro poblado" htmlFor="caja-centro">
+        <Select id="caja-centro" value={sectorId} onChange={(event) => setSectorId(event.target.value)}>
+          <option value={SEDE_CENTRAL}>Sede central</option>
+          {opciones.map((sector) => (
+            <option key={sector.id} value={sector.id}>
+              {sector.nombre}
+            </option>
+          ))}
+        </Select>
+      </FormField>
+      <FormField label="Usuario" htmlFor="caja-usuario">
+        <Select id="caja-usuario" value={usuarioId} onChange={(event) => setUsuarioId(event.target.value)}>
+          <option value="">Seleccionar usuario</option>
+          {personas.map((usuario) => (
+            <option key={usuario.id} value={usuario.id}>
+              {usuario.nombre || usuario.email}
+              {usuario.nombre ? ` · ${usuario.email}` : ''}
+              {usuario.activo ? '' : ' · inactivo'}
+            </option>
+          ))}
+        </Select>
+      </FormField>
+      {sectores.isError ? (
+        <p role="alert" className="text-sm text-destructive">
+          {(sectores.error as Error).message}
+        </p>
+      ) : null}
+      {usuarios.isError ? (
+        <p role="alert" className="text-sm text-destructive">
+          {(usuarios.error as Error).message}
+        </p>
+      ) : null}
       <EstadoField
         id="caja-estado"
         value={activa}

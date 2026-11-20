@@ -35,6 +35,8 @@ export interface BancoInput {
 export interface CajaInput {
   nombre: string
   activa: boolean
+  sector_id: string | null
+  usuario_id: string | null
 }
 
 export interface DocumentoInput {

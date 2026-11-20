@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoaderCircle } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { FormField } from '@/design-system/molecules'
@@ -7,13 +8,14 @@ import { FormLayout } from '@/design-system/templates'
 import type { LecturaListItem, PredioOption, ServicioOption, ValorM3Activo } from '@/modules/lecturas/api'
 import {
   MESES,
-  currentPeriod,
   formatMoney,
   formatVolume,
   periodoLabel,
+  periodoSiguiente,
   predioOptionLabel,
   roundMoney,
   ultimaLecturaAntes,
+  ultimaLecturaDe,
   volumeInput,
   volumenPorDiferencia,
 } from '@/modules/lecturas/labels'
@@ -54,29 +56,43 @@ export function LecturaForm({
   onRegisterMeter,
   onSubmit,
 }: LecturaFormProps) {
-  const period = currentPeriod()
   const predioOptions = withOption(predios, initial?.predio)
   const servicioOptions = withOption(servicios, initial?.servicio)
   const blocked = predioOptions.length === 0 || servicioOptions.length === 0
+  const predioInicial = initial?.predio_id ?? predioId ?? predioOptions[0]?.id ?? ''
+  const servicioInicial =
+    initial?.tipo_servicio_id ??
+    servicioOptions.find((servicio) => servicio.codigo === 'VOL')?.id ??
+    servicioOptions[0]?.id ??
+    ''
+  const period = initial
+    ? {
+        anio: String(initial.anio),
+        mes: String(initial.mes),
+        fecha: initial.fecha_lectura,
+      }
+    : periodoSiguiente(
+        ultimaLecturaDe(lecturas, {
+          predioId: predioInicial,
+          servicioId: servicioInicial,
+        }),
+      )
   const form = useForm<LecturaFormValues>({
     resolver: zodResolver(lecturaFormSchema),
     defaultValues: initial
       ? {
           predio_id: initial.predio_id,
           tipo_servicio_id: initial.tipo_servicio_id,
-          anio: String(initial.anio),
-          mes: String(initial.mes),
-          fecha_lectura: initial.fecha_lectura,
+          anio: period.anio,
+          mes: period.mes,
+          fecha_lectura: period.fecha,
           lectura_m3: volumeInput(initial.lectura_m3),
           lectura_lt: volumeInput(initial.lectura_lt),
           referencia: initial.referencia,
         }
       : {
-          predio_id: predioId ?? predioOptions[0]?.id ?? '',
-          tipo_servicio_id:
-            servicioOptions.find((servicio) => servicio.codigo === 'VOL')?.id ??
-            servicioOptions[0]?.id ??
-            '',
+          predio_id: predioInicial,
+          tipo_servicio_id: servicioInicial,
           anio: period.anio,
           mes: period.mes,
           fecha_lectura: period.fecha,
@@ -91,7 +107,24 @@ export function LecturaForm({
   const mes = Number(form.watch('mes'))
   const lecturaM3Raw = form.watch('lectura_m3')
   const lecturaLtRaw = form.watch('lectura_lt')
-  const sinMedidor = !predioOptions.find((predio) => predio.id === chosenId)?.medidor
+  const predioElegido = predioOptions.find((predio) => predio.id === chosenId)
+  const sinMedidor = !predioElegido?.medidor
+  const periodoAplicado = useRef(`${predioInicial}|${servicioInicial}`)
+  const ultimaRegistrada = ultimaLecturaDe(lecturas, {
+    predioId: chosenId,
+    servicioId,
+    excludeId: initial?.id,
+  })
+  const siguiente = periodoSiguiente(ultimaRegistrada)
+  useEffect(() => {
+    if (initial) return
+    const clave = `${chosenId}|${servicioId}`
+    if (periodoAplicado.current === clave) return
+    periodoAplicado.current = clave
+    form.setValue('anio', siguiente.anio)
+    form.setValue('mes', siguiente.mes)
+    form.setValue('fecha_lectura', siguiente.fecha)
+  }, [chosenId, form, initial, servicioId, siguiente.anio, siguiente.fecha, siguiente.mes])
   const periodoValido = Number.isInteger(anio) && anio >= 1000 && mes >= 1 && mes <= 12
   const ultima =
     historialListo && periodoValido
@@ -103,24 +136,31 @@ export function LecturaForm({
           excludeId: initial?.id,
         })
       : null
+  const primera = Boolean(historialListo && periodoValido && !ultima)
   const lecturaM3 = Number(lecturaM3Raw)
   const lecturaLt = lecturaLtRaw.trim() === '' ? 0 : Number(lecturaLtRaw)
   const lecturaLista =
     lecturaM3Raw.trim() !== '' && Number.isFinite(lecturaM3) && Number.isFinite(lecturaLt)
   const volumen =
     historialListo && lecturaLista
-      ? volumenPorDiferencia(
-          lecturaM3,
-          lecturaLt,
-          Number(ultima?.lectura_m3 ?? 0),
-          Number(ultima?.lectura_lt ?? 0),
-        )
+      ? primera
+        ? 0
+        : volumenPorDiferencia(
+            lecturaM3,
+            lecturaLt,
+            Number(ultima?.lectura_m3 ?? 0),
+            Number(ultima?.lectura_lt ?? 0),
+          )
       : null
   const volumenValido = volumen != null && volumen >= 0
   const tarifaAnio = Number.isInteger(anio) ? valoresM3.find((item) => item.anio === anio) ?? null : null
   const importe =
-    volumenValido && tarifaAnio && tarifaAnio.valor > 0 ? roundMoney(volumen * tarifaAnio.valor) : null
-  const sinTarifa = Boolean(volumenValido && volumen > 0 && importe == null)
+    primera || !volumenValido
+      ? null
+      : tarifaAnio && tarifaAnio.valor > 0
+        ? roundMoney(volumen * tarifaAnio.valor)
+        : null
+  const sinTarifa = Boolean(!primera && volumenValido && volumen > 0 && importe == null)
   const lecturaMenor = volumen != null && volumen < 0
   const lecturaError = lecturaMenor
     ? `La lectura es menor que la última registrada (${formatVolume(ultima?.lectura_m3 ?? 0)} m³).`
@@ -189,7 +229,18 @@ export function LecturaForm({
         <FormField label="Año" htmlFor="anio" error={form.formState.errors.anio?.message}>
           <Input id="anio" inputMode="numeric" {...form.register('anio')} />
         </FormField>
-        <FormField label="Mes" htmlFor="mes" error={form.formState.errors.mes?.message}>
+        <FormField
+          label="Mes"
+          htmlFor="mes"
+          hint={
+            initial
+              ? undefined
+              : ultimaRegistrada
+                ? `Última lectura: ${periodoLabel(ultimaRegistrada.anio, ultimaRegistrada.mes)}. Se carga el mes siguiente.`
+                : 'Este medidor todavía no tiene lecturas.'
+          }
+          error={form.formState.errors.mes?.message}
+        >
           <Select id="mes" {...form.register('mes')}>
             {MESES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -213,12 +264,12 @@ export function LecturaForm({
               ? 'No se pudo consultar la última lectura.'
               : ultima
                 ? `${periodoLabel(ultima.anio, ultima.mes)}${Number(ultima.lectura_lt) > 0 ? ` · ${formatVolume(ultima.lectura_lt)} L` : ''}.`
-                : 'No hay una lectura anterior para este predio y servicio. Se toma 0.'
+                : 'Primera lectura de este medidor. Solo deja el índice; no calcula monto.'
           }
         >
           <Input
             id="ultima_lectura"
-            value={ultima ? formatVolume(ultima.lectura_m3) : '0.00'}
+            value={ultima ? formatVolume(ultima.lectura_m3) : ''}
             readOnly
             tabIndex={-1}
             className="bg-muted tabular-nums"
@@ -245,9 +296,9 @@ export function LecturaForm({
           hint={
             lecturaMenor
               ? 'La diferencia no puede ser negativa.'
-              : ultima
-                ? 'Lectura nueva menos la última lectura registrada.'
-                : 'Sin lectura anterior, el volumen es la lectura ingresada.'
+              : primera
+                ? 'La primera lectura no genera volumen. Se halla desde la siguiente, por la diferencia.'
+                : 'Lectura nueva menos la última lectura registrada.'
           }
         >
           <Input
@@ -262,7 +313,9 @@ export function LecturaForm({
           label="Referencia S/."
           htmlFor="referencia_soles"
           hint={
-            sinTarifa
+            primera
+              ? 'La primera lectura no calcula monto. El importe en soles empieza en la siguiente lectura.'
+              : sinTarifa
               ? `No hay tarifa de volumen para ${anio}.`
               : tarifaAnio
                 ? volumenValido

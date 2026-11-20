@@ -5,8 +5,9 @@ import { Icon } from '@/design-system/atoms'
 import { NavSearch } from '@/modules/navegacion/components/nav-search'
 import { NavSectionBlock } from '@/modules/navegacion/components/nav-section'
 import { SidebarUser } from '@/modules/navegacion/components/sidebar-user'
-import { logoPublicUrl, useMarca, useOrganizacion } from '@/modules/configuracion'
+import { logoPublicUrl, useMarca, useMisPermisos, useOrganizacion } from '@/modules/configuracion'
 import { brandNav, mainNav, pathIsCurrent } from '@/modules/navegacion/menu'
+import { filtrarNav } from '@/modules/navegacion/permisos'
 import type { NavSection } from '@/modules/navegacion/types'
 import { cn } from '@/shared/lib/utils'
 
@@ -17,15 +18,16 @@ export interface AppSidebarProps {
   onNavigate?: () => void
 }
 
-const topSections = mainNav.filter((section) => section.id === 'inicio')
-const groups = mainNav.filter((section) => section.id !== 'inicio')
-
 function sectionIsCurrent(section: NavSection, pathname: string) {
   return section.items.some((item) => item.path && pathIsCurrent(pathname, item.path))
 }
 
-function openForPath(pathname: string) {
-  return Object.fromEntries(groups.map((section) => [section.id, sectionIsCurrent(section, pathname)]))
+function openForPath(pathname: string, sections: NavSection[]) {
+  return Object.fromEntries(
+    sections
+      .filter((section) => section.id !== 'inicio')
+      .map((section) => [section.id, sectionIsCurrent(section, pathname)]),
+  )
 }
 
 function RailButton({
@@ -101,8 +103,14 @@ function SidebarBrand({
   )
 }
 
-function TopLinks({ onNavigate }: { onNavigate?: () => void }) {
-  return topSections.flatMap((section) =>
+function TopLinks({
+  sections,
+  onNavigate,
+}: {
+  sections: NavSection[]
+  onNavigate?: () => void
+}) {
+  return sections.flatMap((section) =>
     section.items
       .filter((item) => item.path)
       .map((item) => (
@@ -134,8 +142,12 @@ export function AppSidebar({
   onNavigate,
 }: AppSidebarProps) {
   const { pathname } = useLocation()
+  const acceso = useMisPermisos()
+  const nav = useMemo(() => filtrarNav(mainNav, acceso.data), [acceso.data])
+  const topSections = nav.filter((section) => section.id === 'inicio')
+  const groups = nav.filter((section) => section.id !== 'inicio')
   const [query, setQuery] = useState('')
-  const [openMap, setOpenMap] = useState<Record<string, boolean>>(() => openForPath(pathname))
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>(() => openForPath(pathname, mainNav))
 
   useEffect(() => {
     setOpenMap((prev) => {
@@ -150,7 +162,7 @@ export function AppSidebar({
   const matchCount = useMemo(() => {
     if (!query.trim()) return null
     const q = query.trim().toLowerCase()
-    return mainNav.reduce((total, section) => {
+    return nav.reduce((total, section) => {
       const hits = section.items.filter(
         (item) =>
           item.label.toLowerCase().includes(q) ||
@@ -159,7 +171,7 @@ export function AppSidebar({
       ).length
       return total + hits
     }, 0)
-  }, [query])
+  }, [nav, query])
 
   function revealGroup(id: string) {
     setOpenMap((prev) => ({ ...prev, [id]: true }))
@@ -206,7 +218,7 @@ export function AppSidebar({
           </>
         ) : (
           <>
-            <TopLinks onNavigate={onNavigate} />
+            <TopLinks sections={topSections} onNavigate={onNavigate} />
             {groups.map((section) => (
               <NavSectionBlock
                 key={section.id}

@@ -1,6 +1,7 @@
 export const organizacionQueryKeys = {
   jass: ['configuracion', 'jass'] as const,
   roles: ['configuracion', 'roles'] as const,
+  misPermisos: ['configuracion', 'mis-permisos'] as const,
   usuariosSistema: ['configuracion', 'usuarios-sistema'] as const,
   marca: ['configuracion', 'marca'] as const,
   conceptosMulta: ['configuracion', 'conceptos-multa'] as const,

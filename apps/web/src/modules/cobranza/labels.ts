@@ -64,3 +64,8 @@ export function predioLabel(nombre: string, numero: string) {
   const nro = numero.trim()
   return nro ? `${nombre} · ${nro}` : nombre
 }
+
+export function etiquetaCaja(nombre: string, sector: string, usuario = '') {
+  const centro = `${nombre} — ${sector || 'Sede central'}`
+  return usuario ? `${centro} — ${usuario}` : centro
+}

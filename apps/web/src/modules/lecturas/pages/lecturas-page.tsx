@@ -136,7 +136,7 @@ export function LecturasPage() {
           : lectura
             ? `Editando ${titular} · ${periodoLabel(lectura.anio, lectura.mes)}.`
             : selectedPredio?.medidor
-              ? `Medidor ${selectedPredio.medidor.codigo}. Al guardar se graba la deuda por el volumen.`
+              ? `Medidor ${selectedPredio.medidor.codigo}. La primera lectura deja el índice. Desde la siguiente se graba la deuda por la diferencia.`
               : 'Elegí un usuario. Si el predio no tiene medidor, registralo antes de la lectura.'
       }
       list={

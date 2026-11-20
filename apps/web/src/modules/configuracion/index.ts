@@ -2,5 +2,5 @@
 export { OrganizacionPage } from './pages/organizacion-page'
 export { SistemaPage } from './pages/sistema-page'
 export { CobranzaConfigPage } from './pages/cobranza-config-page'
-export { logoPublicUrl, useMarca, useOrganizacion } from './api'
+export { logoPublicUrl, useMarca, useMisPermisos, useOrganizacion } from './api'
 export type { Organizacion } from './api'

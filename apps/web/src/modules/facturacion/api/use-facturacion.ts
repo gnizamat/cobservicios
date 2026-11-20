@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  eliminarFacturacion,
   generarFacturacion,
   getRecibo,
   listDeudasAFacturar,
@@ -55,6 +56,17 @@ export function useRecibo(id: string | null) {
     queryKey: facturacionQueryKeys.recibo(id ?? 'none'),
     queryFn: () => getRecibo(id ?? ''),
     enabled: Boolean(id),
+  })
+}
+
+export function useEliminarFacturacion() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: eliminarFacturacion,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ['facturacion', 'pendientes'] })
+      void client.invalidateQueries({ queryKey: ['facturacion', 'generadas'] })
+    },
   })
 }
 

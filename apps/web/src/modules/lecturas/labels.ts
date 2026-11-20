@@ -86,11 +86,47 @@ export type LecturaComparada = {
   mes: number
   lectura_m3: number
   lectura_lt: number
+  fecha_lectura?: string
+}
+
+export function ultimaLecturaDe(
+  lecturas: LecturaComparada[],
+  filtro: { predioId: string; servicioId: string; excludeId?: string },
+) {
+  let elegida: LecturaComparada | null = null
+  let orden = -1
+  for (const lectura of lecturas) {
+    if (lectura.predio_id !== filtro.predioId || lectura.tipo_servicio_id !== filtro.servicioId) continue
+    if (filtro.excludeId && lectura.id === filtro.excludeId) continue
+    const actual = lectura.anio * 12 + lectura.mes
+    if (actual <= orden) continue
+    orden = actual
+    elegida = lectura
+  }
+  return elegida
+}
+
+export function periodoSiguiente(ultima: { anio: number; mes: number } | null) {
+  if (!ultima) return currentPeriod()
+  const mes = ultima.mes === 12 ? 1 : ultima.mes + 1
+  const anio = ultima.mes === 12 ? ultima.anio + 1 : ultima.anio
+  const dia = new Date(anio, mes, 0).getDate()
+  return {
+    anio: String(anio),
+    mes: String(mes),
+    fecha: `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`,
+  }
 }
 
 export function ultimaLecturaAntes(
   lecturas: LecturaComparada[],
-  filtro: { predioId: string; servicioId: string; anio: number; mes: number; excludeId?: string },
+  filtro: {
+    predioId: string
+    servicioId: string
+    anio: number
+    mes: number
+    excludeId?: string
+  },
 ) {
   const corte = filtro.anio * 12 + filtro.mes
   let elegida: LecturaComparada | null = null
