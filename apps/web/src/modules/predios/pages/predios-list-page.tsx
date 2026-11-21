@@ -99,6 +99,7 @@ export function PrediosListPage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Predios"
         description="Padrón de predios con búsqueda, filtros y paginación."
         actions={

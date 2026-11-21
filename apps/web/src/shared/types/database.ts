@@ -1137,6 +1137,7 @@ export type Database = {
           id: string
           nombre: string
           porcentaje: number
+          monto: number
           estado: Database['public']['Enums']['estado_registro']
           created_at: string
           updated_at: string
@@ -1145,6 +1146,7 @@ export type Database = {
           id?: string
           nombre: string
           porcentaje?: number
+          monto?: number
           estado?: Database['public']['Enums']['estado_registro']
           created_at?: string
           updated_at?: string
@@ -1153,6 +1155,7 @@ export type Database = {
           id?: string
           nombre?: string
           porcentaje?: number
+          monto?: number
           estado?: Database['public']['Enums']['estado_registro']
           updated_at?: string
         }

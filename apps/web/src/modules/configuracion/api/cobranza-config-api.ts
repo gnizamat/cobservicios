@@ -23,6 +23,7 @@ export interface ConceptoMultaInput {
 export interface InteresInput {
   nombre: string
   porcentaje: number
+  monto: number
   estado: EstadoRegistro
 }
 

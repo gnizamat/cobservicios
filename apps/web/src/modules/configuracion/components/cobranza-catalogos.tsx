@@ -243,6 +243,7 @@ export function InteresesPanel() {
     nombre: row.nombre,
     estado: row.estado,
     detalle: `${tasa.format(row.porcentaje)} %`,
+    extra: moneda.format(row.monto),
   }))
   const seleccion = useSeleccion(query.data ?? [])
   const actual = seleccion.selected
@@ -254,21 +255,27 @@ export function InteresesPanel() {
       error={query.isError ? (query.error as Error).message : null}
       columns={[
         { key: 'nombre', header: 'Interés' },
-        { key: 'detalle', header: 'Porcentaje', className: 'w-28' },
+        { key: 'detalle', header: 'Porcentaje', className: 'w-24 text-right' },
+        { key: 'extra', header: 'Monto', className: 'w-24 text-right' },
         { key: 'estado', header: 'Estado', className: 'w-24' },
       ]}
       vacio="Todavía no hay tasas de interés."
       selectedId={actual?.id}
       onSelect={(row) => seleccion.elegir(row.id)}
       onNew={seleccion.crear}
-      renderCell={(row, key) =>
-        key === 'estado' ? <StatusBadge status={row.estado} /> : row[key as 'nombre' | 'detalle']
-      }
+      renderCell={(row, key) => {
+        if (key === 'estado') return <StatusBadge status={row.estado} />
+        if (key === 'detalle' || key === 'extra') {
+          return <span className="block text-right tabular-nums">{row[key] ?? '—'}</span>
+        }
+        return row.nombre
+      }}
       formulario={
         <InteresForm
           key={actual?.id ?? 'nuevo'}
           nombreInicial={actual?.nombre ?? ''}
           porcentajeInicial={actual ? String(actual.porcentaje) : ''}
+          montoInicial={actual ? String(actual.monto) : ''}
           estadoInicial={actual?.estado ?? 'activo'}
           nuevo={!actual}
           guardando={save.isPending}
@@ -288,6 +295,7 @@ export function InteresesPanel() {
 function InteresForm({
   nombreInicial,
   porcentajeInicial,
+  montoInicial,
   estadoInicial,
   nuevo,
   guardando,
@@ -296,14 +304,16 @@ function InteresForm({
 }: {
   nombreInicial: string
   porcentajeInicial: string
+  montoInicial: string
   estadoInicial: EstadoRegistro
   nuevo: boolean
   guardando: boolean
   error: string | null
-  onSave: (input: { nombre: string; porcentaje: number; estado: EstadoRegistro }) => void
+  onSave: (input: { nombre: string; porcentaje: number; monto: number; estado: EstadoRegistro }) => void
 }) {
   const [nombre, setNombre] = useState(nombreInicial)
   const [porcentaje, setPorcentaje] = useState(porcentajeInicial)
+  const [monto, setMonto] = useState(montoInicial)
   const [estado, setEstado] = useState(estadoInicial)
   const [local, setLocal] = useState<string | null>(null)
 
@@ -315,17 +325,27 @@ function InteresForm({
           guardando={guardando}
           nuevo={nuevo}
           onSubmit={() => {
-            const valor = Number(porcentaje)
+            const tasaValor = Number(porcentaje)
+            const montoValor = Number(monto)
             if (!nombre.trim()) {
               setLocal('Indicá el nombre del interés.')
               return
             }
-            if (!Number.isFinite(valor) || valor < 0) {
+            if (!Number.isFinite(tasaValor) || tasaValor < 0) {
               setLocal('El porcentaje tiene que ser cero o mayor.')
               return
             }
+            if (!Number.isFinite(montoValor) || montoValor < 0) {
+              setLocal('El monto en soles tiene que ser cero o mayor.')
+              return
+            }
             setLocal(null)
-            onSave({ nombre: nombre.trim(), porcentaje: valor, estado })
+            onSave({
+              nombre: nombre.trim(),
+              porcentaje: tasaValor,
+              monto: montoValor,
+              estado,
+            })
           }}
         />
       }
@@ -348,6 +368,14 @@ function InteresForm({
           inputMode="decimal"
           value={porcentaje}
           onChange={(event) => setPorcentaje(event.target.value)}
+        />
+      </FormField>
+      <FormField label="Monto en soles" htmlFor="interes-monto" hint="Mora fija, además del porcentaje.">
+        <Input
+          id="interes-monto"
+          inputMode="decimal"
+          value={monto}
+          onChange={(event) => setMonto(event.target.value)}
         />
       </FormField>
       <EstadoField id="interes-estado" value={estado} onChange={setEstado} />

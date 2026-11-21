@@ -1,5 +1,5 @@
-import { LoaderCircle } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { LoaderCircle, Search } from 'lucide-react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { PageHeader, PaginationBar } from '@/design-system/molecules'
 import { DataTable } from '@/design-system/organisms'
@@ -51,11 +51,6 @@ function normalizar(valor: string) {
     .replace(/\p{M}/gu, '')
 }
 
-function incluye(valor: string, busqueda: string) {
-  if (!busqueda) return true
-  return normalizar(valor).includes(normalizar(busqueda))
-}
-
 function predioTexto(predio: PadronItem['predio']) {
   if (!predio) return '—'
   return [predio.nombre, predio.numero, predio.manzana && `Mz ${predio.manzana}`, predio.lote && `Lt ${predio.lote}`]
@@ -70,10 +65,7 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
   const [sectorId, setSectorId] = useState('all')
   const [asambleaId, setAsambleaId] = useState('')
   const [calle, setCalle] = useState('all')
-  const [dni, setDni] = useState('')
-  const [nombres, setNombres] = useState('')
-  const [apellidos, setApellidos] = useState('')
-  const [correlativo, setCorrelativo] = useState('')
+  const [busqueda, setBusqueda] = useState('')
   const [vista, setVista] = useState<Vista>('control')
   const [page, setPage] = useState(1)
   const pageSize = 20
@@ -105,25 +97,15 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
   )
 
   const filtrados = useMemo(() => {
-    const dniBusqueda = dni.trim()
-    const nombresBusqueda = nombres.trim()
-    const apellidosBusqueda = apellidos.trim()
-    const correlativoBusqueda = correlativo.trim()
+    const texto = busqueda.trim()
     return habiles.filter((row) => {
       if (calle !== 'all' && row.calle !== calle) return false
-      if (
-        dniBusqueda &&
-        !incluye(row.dni, dniBusqueda) &&
-        !incluye(row.documento, dniBusqueda)
-      ) {
-        return false
-      }
-      if (nombresBusqueda && !incluye(row.nombres, nombresBusqueda)) return false
-      if (apellidosBusqueda && !incluye(row.apellidos, apellidosBusqueda)) return false
-      if (correlativoBusqueda && String(row.correlativo) !== correlativoBusqueda) return false
-      return true
+      if (!texto) return true
+      return [row.dni, row.documento, row.nombres, row.apellidos, row.nombre, String(row.correlativo)].some(
+        (parte) => normalizar(parte).includes(normalizar(texto)),
+      )
     })
-  }, [apellidos, calle, correlativo, dni, habiles, nombres])
+  }, [busqueda, calle, habiles])
 
   const asistentesFiltrados = filtrados.filter((row) => row.asistencia)
   const lista = vista === 'asistentes' ? asistentesFiltrados : filtrados
@@ -156,14 +138,11 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
 
   useEffect(() => {
     setPage(1)
-  }, [asambleaId, sectorId, calle, dni, nombres, apellidos, correlativo, vista])
+  }, [asambleaId, sectorId, calle, busqueda, vista])
 
   function limpiar() {
     setCalle('all')
-    setDni('')
-    setNombres('')
-    setApellidos('')
-    setCorrelativo('')
+    setBusqueda('')
   }
 
   function reporteActual(): ReporteTabla {
@@ -216,15 +195,14 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
         />
       )}
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-3 grid gap-3 sm:grid-cols-3">
         <Dato etiqueta="N° hábiles" valor={String(totalHabiles)} />
         <Dato etiqueta="N° asistentes" valor={String(totalAsistentes)} />
         <Dato etiqueta="% asistencia" valor={`${porcentaje(totalAsistentes, totalHabiles)} %`} />
       </div>
 
-      <div className="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
-        <label className="flex flex-col gap-1 text-xs text-muted-foreground xl:col-span-2">
-          Centro poblado
+      <div className="mb-3 grid gap-3 md:grid-cols-3">
+        <Filtro label="Centro poblado">
           <Select
             aria-label="Centro poblado"
             value={sectorId}
@@ -232,7 +210,7 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
               setSectorId(event.target.value)
               setCalle('all')
             }}
-            className="h-8 text-sm text-foreground"
+            className="h-8 w-full text-sm text-foreground"
           >
             <option value="all">Todos los centros poblados</option>
             {(sectores.data ?? []).map((sector) => (
@@ -241,32 +219,28 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
               </option>
             ))}
           </Select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-muted-foreground xl:col-span-2">
-          Asamblea
+        </Filtro>
+        <Filtro label="Asamblea">
           <Select
             aria-label="Asamblea"
             value={asamblea?.id ?? ''}
             onChange={(event) => setAsambleaId(event.target.value)}
-            className="h-8 text-sm text-foreground"
+            className="h-8 w-full text-sm text-foreground"
           >
-            {asambleasVisibles.length === 0 ? (
-              <option value="">Sin asambleas</option>
-            ) : null}
+            {asambleasVisibles.length === 0 ? <option value="">Sin asambleas</option> : null}
             {asambleasVisibles.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.anio} · {item.sector?.nombre ?? 'Centro poblado'} · {item.descripcion}
               </option>
             ))}
           </Select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-muted-foreground xl:col-span-2">
-          Calle
+        </Filtro>
+        <Filtro label="Calle">
           <Select
             aria-label="Calle"
-            value={calle}
+            value={calles.includes(calle) ? calle : 'all'}
             onChange={(event) => setCalle(event.target.value)}
-            className="h-8 text-sm text-foreground"
+            className="h-8 w-full text-sm text-foreground"
           >
             <option value="all">Todas las calles</option>
             {calles.map((item) => (
@@ -275,15 +249,27 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
               </option>
             ))}
           </Select>
-        </label>
-        <Campo label="DNI" value={dni} onChange={setDni} />
-        <Campo label="Nombres" value={nombres} onChange={setNombres} className="xl:col-span-2" />
-        <Campo label="Apellidos" value={apellidos} onChange={setApellidos} className="xl:col-span-2" />
-        <Campo label="N° correlativo" value={correlativo} onChange={setCorrelativo} />
+        </Filtro>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1">
+      <div className="relative mb-3">
+        <Icon
+          icon={Search}
+          size={14}
+          className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
+        />
+        <Input
+          value={busqueda}
+          onChange={(event) => setBusqueda(event.target.value)}
+          placeholder="DNI, nombres, apellidos o N° correlativo…"
+          aria-label="Buscar en el padrón"
+          autoComplete="off"
+          className="h-8 pl-8 text-sm"
+        />
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-1 rounded-lg bg-secondary/60 p-1">
           {vistas.map((item) => (
             <button
               key={item.id}
@@ -301,7 +287,7 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 sm:ml-auto">
           <Button
             type="button"
             size="sm"
@@ -420,26 +406,11 @@ export function AsistenciaPage({ embedded = false }: { embedded?: boolean }) {
   return <AppShell className="max-w-7xl">{contenido}</AppShell>
 }
 
-function Campo({
-  label,
-  value,
-  onChange,
-  className,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  className?: string
-}) {
+function Filtro({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className={cn('flex flex-col gap-1 text-xs text-muted-foreground', className)}>
+    <label className="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground">
       {label}
-      <Input
-        aria-label={label}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-8"
-      />
+      {children}
     </label>
   )
 }

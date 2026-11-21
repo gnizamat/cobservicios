@@ -63,6 +63,7 @@ export function UsuariosListPage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Usuarios de servicio"
         description="Padrón de usuarios con búsqueda, filtros y paginación."
         actions={

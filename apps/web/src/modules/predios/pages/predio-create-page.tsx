@@ -11,6 +11,7 @@ export function PredioCreatePage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Registrar predio"
         description="Alta de predio asociado a un usuario del padrón."
       />

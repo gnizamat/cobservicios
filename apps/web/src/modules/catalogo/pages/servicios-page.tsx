@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Button } from '@/design-system/atoms'
-import { StatusBadge } from '@/design-system/molecules'
+import { FilterSelect, StatusBadge } from '@/design-system/molecules'
 import { DataTable } from '@/design-system/organisms'
 import { categoriaServicioLabel, useSaveServicio, useServicios } from '@/modules/catalogo/api'
 import { CatalogWorkspace } from '@/modules/catalogo/components/catalog-workspace'
 import { ServicioForm } from '@/modules/catalogo/components/servicio-form'
 import { useRecordSelection } from '@/modules/catalogo/components/use-record-selection'
-import { includesSearch } from '@/modules/catalogo/labels'
+import { CATEGORIAS_SERVICIO, includesSearch } from '@/modules/catalogo/labels'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 
 const columns = [
@@ -27,16 +27,26 @@ export function ServiciosPage({
   description?: string
 }) {
   const [searchInput, setSearchInput] = useState('')
+  const [categoria, setCategoria] = useState('all')
   const search = useDebouncedValue(searchInput.trim(), 200)
   const query = useServicios()
   const save = useSaveServicio()
   const [savedLabel, setSavedLabel] = useState<string | null>(null)
+  const categoriaOptions = useMemo(
+    () => [
+      { value: 'all', label: 'Todas las categorías' },
+      ...CATEGORIAS_SERVICIO.map((item) => ({ value: item.value, label: item.label })),
+    ],
+    [],
+  )
   const records = useMemo(
     () =>
-      (query.data ?? []).filter((row) =>
-        includesSearch(search, [row.codigo, row.nombre, categoriaServicioLabel(row.categoria)]),
+      (query.data ?? []).filter(
+        (row) =>
+          (categoria === 'all' || row.categoria === categoria) &&
+          includesSearch(search, [row.codigo, row.nombre, categoriaServicioLabel(row.categoria)]),
       ),
-    [query.data, search],
+    [categoria, query.data, search],
   )
   const selection = useRecordSelection(records)
 
@@ -48,8 +58,19 @@ export function ServiciosPage({
       search={searchInput}
       onSearchChange={setSearchInput}
       searchPlaceholder="Código, nombre o categoría…"
-      hasActiveFilters={Boolean(searchInput.trim())}
-      onResetFilters={() => setSearchInput('')}
+      filters={
+        <FilterSelect
+          label="Categoría"
+          value={categoriaOptions.some((option) => option.value === categoria) ? categoria : 'all'}
+          options={categoriaOptions}
+          onChange={setCategoria}
+        />
+      }
+      hasActiveFilters={Boolean(searchInput.trim()) || categoria !== 'all'}
+      onResetFilters={() => {
+        setSearchInput('')
+        setCategoria('all')
+      }}
       onNew={() => {
         setSavedLabel(null)
         selection.startCreate()

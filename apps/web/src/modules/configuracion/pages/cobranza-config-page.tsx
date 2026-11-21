@@ -52,7 +52,7 @@ export function CobranzaConfigPage() {
 
   return (
     <AppShell className="max-w-7xl">
-      <header className="mb-6 space-y-1">
+      <header className="mb-4 space-y-1">
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground">
           Configuración de cobranza
         </h1>
@@ -60,8 +60,11 @@ export function CobranzaConfigPage() {
           Años y tipos de tarifa, costos, conceptos de multa, intereses, bancos, cajas y documentos.
         </p>
       </header>
-      <div className="grid items-start gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <nav aria-label="Secciones de cobranza" className="flex flex-col gap-1">
+      <div className="grid items-start gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)]">
+        <nav
+          aria-label="Secciones de cobranza"
+          className="flex flex-col gap-0.5 lg:sticky lg:top-0"
+        >
           {secciones.map((item) => {
             const active = seccion === item.id
             return (

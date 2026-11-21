@@ -11,6 +11,7 @@ export function UsuarioCreatePage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Registrar usuario"
         description="Alta de usuario de servicio en el padrón."
       />

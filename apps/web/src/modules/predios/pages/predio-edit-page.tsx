@@ -13,6 +13,7 @@ export function PredioEditPage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Modificar predio"
         description="Actualización de datos del predio de servicio."
       />

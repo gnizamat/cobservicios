@@ -37,10 +37,10 @@ export function AppShell({ children, className }: AppShellProps) {
   )
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-background md:gap-3 md:p-3">
+    <div className="flex h-dvh overflow-hidden bg-background md:gap-2 md:p-2">
       <div
         className={cn(
-          'fixed inset-y-3 left-3 z-30 h-[calc(100dvh-1.5rem)] shrink-0 transition-transform duration-200 md:static md:z-auto md:h-full',
+          'fixed inset-y-2 left-2 z-30 h-[calc(100dvh-1rem)] shrink-0 transition-transform duration-200 md:static md:z-auto md:h-full',
           mobileOpen ? 'translate-x-0' : '-translate-x-[120%] md:translate-x-0',
         )}
       >

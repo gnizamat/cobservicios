@@ -39,10 +39,11 @@ export function RecordWorkspace({
   embedded = false,
 }: RecordWorkspaceProps) {
   const body = (
-    <>
+    <div className="min-w-0">
       <PageHeader
         title={title}
         description={description}
+        className={embedded ? 'mb-3' : undefined}
         actions={
           <Button type="button" size="sm" onClick={onNew}>
             <Icon icon={Plus} size={16} />
@@ -61,11 +62,11 @@ export function RecordWorkspace({
         filters={filters}
       />
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.75fr)]">
         <div className="order-2 min-w-0 lg:order-1">{list}</div>
-        <section className="order-1 min-w-0 lg:sticky lg:top-4 lg:order-2">
-          <div className="mb-3 space-y-1">
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground">
+        <section className="order-1 min-w-0 lg:sticky lg:top-0 lg:order-2">
+          <div className="mb-2 space-y-0.5">
+            <h3 className="font-[family-name:var(--font-display)] text-base font-semibold text-foreground">
               {formTitle}
             </h3>
             <p className="text-sm text-muted-foreground">{formDescription}</p>
@@ -73,7 +74,7 @@ export function RecordWorkspace({
           {form}
         </section>
       </div>
-    </>
+    </div>
   )
 
   if (embedded) return body

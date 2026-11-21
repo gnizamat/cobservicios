@@ -13,6 +13,7 @@ export function UsuarioEditPage() {
   return (
     <AppShell>
       <PageHeader
+        className="mb-3"
         title="Modificar usuario"
         description="Actualización de datos del padrón de usuarios."
       />

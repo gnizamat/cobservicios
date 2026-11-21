@@ -40,7 +40,7 @@ export function NavSectionBlock({ section, open, onToggle, query, onNavigate }: 
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:bg-secondary/80 hover:text-foreground"
+        className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:bg-secondary/80 hover:text-foreground"
         aria-expanded={isOpen}
       >
         <span className="min-w-0 flex-1 truncate">{section.label}</span>
@@ -53,7 +53,7 @@ export function NavSectionBlock({ section, open, onToggle, query, onNavigate }: 
       </button>
 
       {isOpen ? (
-        <ul className="mb-1 space-y-0.5">
+        <ul className="mb-0.5 space-y-0.5">
           {filtered.map((item) => {
             if (!item.path) return null
             const ItemIcon = itemIcon(item, section)
@@ -65,7 +65,7 @@ export function NavSectionBlock({ section, open, onToggle, query, onNavigate }: 
                   onClick={onNavigate}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors',
+                      'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors',
                       isActive
                         ? 'bg-secondary font-medium text-foreground'
                         : 'text-foreground/80 hover:bg-secondary/70 hover:text-foreground',

@@ -42,7 +42,7 @@ export function ListFilters({
     <form
       onSubmit={handleSubmit}
       className={cn(
-        'mb-3 flex flex-col gap-2 rounded-lg border border-border/80 bg-card/60 p-2.5 sm:flex-row sm:flex-wrap sm:items-center',
+        'mb-3 flex flex-col gap-2 rounded-lg border border-border/80 bg-card/60 p-2 sm:flex-row sm:flex-wrap sm:items-center',
         className,
       )}
     >

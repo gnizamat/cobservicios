@@ -182,7 +182,7 @@ export function AppSidebar({
     <aside
       className={cn(
         'flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card text-card-foreground shadow-[var(--shadow-lg)]',
-        collapsed ? 'w-[4.5rem]' : 'w-72',
+        collapsed ? 'w-[4.5rem]' : 'w-60',
         className,
       )}
     >
