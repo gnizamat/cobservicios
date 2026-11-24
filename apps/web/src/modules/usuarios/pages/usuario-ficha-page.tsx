@@ -3,6 +3,7 @@ import {
   FileText,
   Gauge,
   House,
+  Printer,
   Receipt,
   UserRound,
   Wallet,
@@ -16,6 +17,8 @@ import { DataTable } from '@/design-system/organisms'
 import { AppShell } from '@/design-system/templates'
 import { useFichaUsuario } from '@/modules/usuarios/api'
 import type { UsuarioFicha } from '@/modules/usuarios/api/ficha-api'
+import { FichaReporteDialog } from '@/modules/usuarios/components/ficha-reporte-dialog'
+import { buildReporteFicha, type SeccionReporte } from '@/modules/usuarios/lib/ficha-reporte'
 import {
   buildMovimientos,
   documentoFicha,
@@ -44,7 +47,7 @@ const secciones = [
   { id: 'movimientos', label: 'Movimientos', icon: ArrowLeftRight },
 ] as const
 
-type SeccionId = (typeof secciones)[number]['id']
+type SeccionId = SeccionReporte
 
 export function UsuarioFichaPage() {
   const { id = '' } = useParams()
@@ -82,6 +85,8 @@ function FichaContenido({
   const usuario = ficha.usuario
   const movimientos = buildMovimientos(ficha)
   const saldo = sumSaldo(ficha)
+  const [reporteAbierto, setReporteAbierto] = useState(false)
+  const reporte = buildReporteFicha(seccion, ficha, movimientos)
   const counts: Partial<Record<SeccionId, number>> = {
     predios: ficha.predios.length,
     lecturas: ficha.lecturas.length,
@@ -148,7 +153,13 @@ function FichaContenido({
           })}
         </nav>
 
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-3">
+          <div className="flex justify-end">
+            <Button type="button" size="sm" variant="outline" onClick={() => setReporteAbierto(true)}>
+              <Icon icon={Printer} size={14} />
+              Reporte
+            </Button>
+          </div>
           {seccion === 'ficha' ? <SeccionFicha ficha={ficha} /> : null}
           {seccion === 'predios' ? <SeccionPredios ficha={ficha} /> : null}
           {seccion === 'lecturas' ? <SeccionLecturas ficha={ficha} /> : null}
@@ -160,6 +171,9 @@ function FichaContenido({
           ) : null}
         </div>
       </div>
+      {reporteAbierto ? (
+        <FichaReporteDialog reporte={reporte} onClose={() => setReporteAbierto(false)} />
+      ) : null}
     </>
   )
 }
