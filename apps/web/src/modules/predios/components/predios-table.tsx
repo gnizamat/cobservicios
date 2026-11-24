@@ -24,12 +24,19 @@ const columns = [
   { key: 'acciones', header: '', className: 'w-10 text-right' },
 ]
 
-export function PrediosTable({ rows }: { rows: PredioListItem[] }) {
+export function PrediosTable({
+  rows,
+  onOpen,
+}: {
+  rows: PredioListItem[]
+  onOpen?: (predio: PredioListItem) => void
+}) {
   return (
     <DataTable
       columns={columns}
       rows={rows}
       rowKey={(row) => row.id}
+      onRowSelect={onOpen}
       emptyMessage="No hay predios con esos filtros."
       renderCell={(row, key) => {
         switch (key) {
@@ -61,7 +68,11 @@ export function PrediosTable({ rows }: { rows: PredioListItem[] }) {
           case 'acciones':
             return (
               <Button asChild variant="ghost" size="sm" className="h-7 px-2">
-                <Link to={`/padron/predios/${row.id}/editar`} aria-label="Editar predio">
+                <Link
+                  to={`/padron/predios/${row.id}/editar`}
+                  aria-label="Editar predio"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <Icon icon={Pencil} size={14} />
                 </Link>
               </Button>

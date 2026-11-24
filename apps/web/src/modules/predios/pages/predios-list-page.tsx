@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button, Icon } from '@/design-system/atoms'
 import {
   FilterSelect,
@@ -21,6 +21,7 @@ const ESTADO_OPTIONS = [
 ]
 
 export function PrediosListPage() {
+  const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState('')
   const search = useDebouncedValue(searchInput.trim(), 300)
   const [estado, setEstado] = useState<ListEstadoFilter>('all')
@@ -174,7 +175,13 @@ export function PrediosListPage() {
         </p>
       ) : (
         <div className={isFetching ? 'opacity-70 transition-opacity' : undefined}>
-          <PrediosTable rows={items} />
+          <PrediosTable
+            rows={items}
+            onOpen={(predio) => {
+              if (!predio.usuario?.id) return
+              navigate(`/padron/usuarios/${predio.usuario.id}`)
+            }}
+          />
           <PaginationBar
             page={page}
             pageSize={pageSize}

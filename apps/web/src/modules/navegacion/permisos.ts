@@ -3,6 +3,11 @@ import type { NavSection } from '@/modules/navegacion/types'
 
 const seccionPorEtiquetaAntigua: Record<string, string> = {
   Administración: 'configuracion',
+  Padrón: 'padron',
+}
+
+const opcionPorEtiquetaAntigua: Record<string, string> = {
+  'Usuarios de servicio': 'usuarios-servicio',
 }
 
 export interface AccesoRol {
@@ -45,7 +50,12 @@ export function expandirPermisos(permisos: string[] | undefined) {
       [...concedidos].some((valor) => seccionPorEtiquetaAntigua[valor] === grupo.id)
 
     for (const item of grupo.items) {
-      if (grupoCompleto || concedidos.has(item.id) || concedidos.has(item.label)) {
+      if (
+        grupoCompleto ||
+        concedidos.has(item.id) ||
+        concedidos.has(item.label) ||
+        [...concedidos].some((valor) => opcionPorEtiquetaAntigua[valor] === item.id)
+      ) {
         ids.add(item.id)
       }
     }

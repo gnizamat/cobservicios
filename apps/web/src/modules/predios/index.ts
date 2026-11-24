@@ -1,4 +1,5 @@
 ﻿export { PrediosListPage } from './pages/predios-list-page'
+export { MapaPrediosPage } from './pages/mapa-predios-page'
 export { PredioCreatePage } from './pages/predio-create-page'
 export { PredioEditPage } from './pages/predio-edit-page'
 export {

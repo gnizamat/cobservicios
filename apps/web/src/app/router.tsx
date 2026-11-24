@@ -20,6 +20,7 @@ import {
 } from '@/modules/lecturas'
 import { ModulePlaceholderPage, flattenNavItems, mainNav } from '@/modules/navegacion'
 import {
+  MapaPrediosPage,
   PredioCreatePage,
   PredioEditPage,
   PrediosListPage,
@@ -38,6 +39,7 @@ const implementedExact = new Set([
   '/padron/usuarios/nuevo',
   '/padron/predios',
   '/padron/predios/nuevo',
+  '/padron/mapa',
   '/padron/transferencias',
   '/catalogo/sectores',
   '/catalogo/calles',
@@ -78,6 +80,7 @@ export function AppRouter() {
         <Route path="/padron/usuarios/:id" element={<UsuarioFichaPage />} />
         <Route path="/padron/usuarios/:id/editar" element={<UsuarioEditPage />} />
 
+        <Route path="/padron/mapa" element={<MapaPrediosPage />} />
         <Route path="/padron/predios" element={<PrediosListPage />} />
         <Route path="/padron/predios/nuevo" element={<PredioCreatePage />} />
         <Route path="/padron/predios/:id/editar" element={<PredioEditPage />} />

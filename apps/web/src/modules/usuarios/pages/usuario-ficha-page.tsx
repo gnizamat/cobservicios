@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   FileText,
+  Gauge,
   House,
   Receipt,
   UserRound,
@@ -36,6 +37,7 @@ import { cn } from '@/shared/lib/utils'
 const secciones = [
   { id: 'ficha', label: 'Ficha', icon: UserRound },
   { id: 'predios', label: 'Predios', icon: House },
+  { id: 'lecturas', label: 'Lecturas', icon: Gauge },
   { id: 'deudas', label: 'Deudas', icon: Receipt },
   { id: 'pagos', label: 'Pagos', icon: Wallet },
   { id: 'facturacion', label: 'Facturación', icon: FileText },
@@ -82,6 +84,7 @@ function FichaContenido({
   const saldo = sumSaldo(ficha)
   const counts: Partial<Record<SeccionId, number>> = {
     predios: ficha.predios.length,
+    lecturas: ficha.lecturas.length,
     deudas: ficha.deudas.length,
     pagos: ficha.pagos.length,
     facturacion: ficha.facturas.length,
@@ -148,6 +151,7 @@ function FichaContenido({
         <div className="min-w-0">
           {seccion === 'ficha' ? <SeccionFicha ficha={ficha} /> : null}
           {seccion === 'predios' ? <SeccionPredios ficha={ficha} /> : null}
+          {seccion === 'lecturas' ? <SeccionLecturas ficha={ficha} /> : null}
           {seccion === 'deudas' ? <SeccionDeudas ficha={ficha} saldo={saldo} /> : null}
           {seccion === 'pagos' ? <SeccionPagos ficha={ficha} /> : null}
           {seccion === 'facturacion' ? <SeccionFacturas ficha={ficha} /> : null}
@@ -276,6 +280,93 @@ function SeccionPredios({ ficha }: { ficha: UsuarioFicha }) {
       }}
     />
   )
+}
+
+function SeccionLecturas({ ficha }: { ficha: UsuarioFicha }) {
+  const prediosConLectura = ficha.predios
+    .map((predio) => ({
+      predio,
+      anios: lecturasPorAnio(ficha.lecturas.filter((lectura) => lectura.predioId === predio.id)),
+    }))
+    .filter((grupo) => grupo.anios.length > 0)
+
+  if (prediosConLectura.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Este usuario no tiene lecturas de medidor.
+      </p>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {prediosConLectura.map(({ predio, anios }) => (
+        <section key={predio.id} className="space-y-3">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">{predio.nombre}</h2>
+            <p className="text-xs text-muted-foreground">
+              {ubicacionPredio(predio) || 'Sin ubicación'}
+              {medidoresLabel(predio) ? ` · Medidor ${medidoresLabel(predio)}` : ''}
+            </p>
+          </div>
+          {anios.map((grupo) => (
+            <div key={grupo.anio} className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{grupo.anio}</span>
+                {' · '}
+                {grupo.lecturas.length === 1
+                  ? '1 lectura'
+                  : `${grupo.lecturas.length} lecturas`}
+                {' · '}
+                Volumen {formatVolume(grupo.volumen)}
+              </p>
+              <DataTable
+                columns={[
+                  { key: 'periodo', header: 'Periodo' },
+                  { key: 'fecha', header: 'Fecha' },
+                  { key: 'servicio', header: 'Servicio' },
+                  { key: 'lectura', header: 'Lectura', className: 'text-right' },
+                  { key: 'volumen', header: 'Volumen', className: 'text-right' },
+                ]}
+                rows={grupo.lecturas}
+                rowKey={(row) => row.id}
+                emptyMessage="Sin lecturas en este año."
+                renderCell={(row, key) => {
+                  if (key === 'periodo') return periodoLabel(row.anio, row.mes)
+                  if (key === 'fecha') return formatFecha(row.fecha)
+                  if (key === 'servicio') return row.servicio || '—'
+                  if (key === 'lectura' || key === 'volumen') {
+                    return (
+                      <span className="block text-right tabular-nums">
+                        {formatVolume(key === 'lectura' ? row.lecturaM3 : row.volumenM3)}
+                      </span>
+                    )
+                  }
+                  return null
+                }}
+              />
+            </div>
+          ))}
+        </section>
+      ))}
+    </div>
+  )
+}
+
+function lecturasPorAnio(lecturas: UsuarioFicha['lecturas']) {
+  const grupos = new Map<number, UsuarioFicha['lecturas']>()
+  for (const lectura of lecturas) {
+    const lista = grupos.get(lectura.anio) ?? []
+    lista.push(lectura)
+    grupos.set(lectura.anio, lista)
+  }
+  return [...grupos.entries()]
+    .sort(([a], [b]) => b - a)
+    .map(([anio, filas]) => ({
+      anio,
+      lecturas: [...filas].sort((a, b) => b.mes - a.mes || b.fecha.localeCompare(a.fecha)),
+      volumen: filas.reduce((total, lectura) => total + lectura.volumenM3, 0),
+    }))
 }
 
 function SeccionDeudas({ ficha, saldo }: { ficha: UsuarioFicha; saldo: number }) {

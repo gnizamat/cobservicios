@@ -128,6 +128,8 @@ export type Database = {
           fecha_documento: string | null
           coord_este: string
           coord_norte: string
+          latitud: number | null
+          longitud: number | null
           estado: EstadoRegistro
           created_at: string
           updated_at: string
@@ -148,6 +150,8 @@ export type Database = {
           fecha_documento?: string | null
           coord_este?: string
           coord_norte?: string
+          latitud?: number | null
+          longitud?: number | null
           estado?: EstadoRegistro
           created_at?: string
           updated_at?: string

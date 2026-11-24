@@ -11,6 +11,7 @@ import {
   Cog,
   Landmark,
   LayoutDashboard,
+  Map,
   MapPinned,
   Receipt,
   Users,
@@ -41,13 +42,21 @@ export const mainNav: NavSection[] = [
   },
   {
     id: 'padron',
-    label: 'Padrón',
+    label: 'Organización',
     description: 'Usuarios, predios y asambleas',
     icon: Users,
     items: [
       {
+        id: 'mapa-predios',
+        label: 'Mapa',
+        path: '/padron/mapa',
+        icon: Map,
+        status: 'ready',
+        description: 'Ubicación de los predios urbanos por calle',
+      },
+      {
         id: 'usuarios-servicio',
-        label: 'Usuarios de servicio',
+        label: 'Usuarios',
         path: '/padron/usuarios',
         icon: Users,
         legacyId: 50,
@@ -62,13 +71,6 @@ export const mainNav: NavSection[] = [
         legacyId: 51,
         status: 'ready',
         description: 'Registrar y modificar predios de servicio',
-      },
-      {
-        id: 'predios-servicios',
-        label: 'Asociar servicios',
-        path: '/padron/predios-servicios',
-        legacyId: 72,
-        status: 'soon',
       },
       {
         id: 'transferencia-predios',
@@ -235,14 +237,6 @@ export const mainNav: NavSection[] = [
     description: 'Pagos e ingresos',
     icon: Wallet,
     items: [
-      {
-        id: 'cobranza-deudas',
-        label: 'Cobranza de deudas',
-        path: '/cobranza',
-        icon: Banknote,
-        legacyId: 53,
-        status: 'soon',
-      },
       {
         id: 'cobranza-facturaciones',
         label: 'Cobranza de facturaciones',

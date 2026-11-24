@@ -8,7 +8,7 @@ const featuredIds = [
   'predios',
   'lecturas',
   'facturacion',
-  'cobranza-deudas',
+  'cobranza-facturaciones',
 ]
 
 export function QuickLinks() {

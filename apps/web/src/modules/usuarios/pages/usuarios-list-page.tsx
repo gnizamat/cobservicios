@@ -64,7 +64,7 @@ export function UsuariosListPage() {
     <AppShell>
       <PageHeader
         className="mb-3"
-        title="Usuarios de servicio"
+        title="Usuarios"
         description="Padrón de usuarios con búsqueda, filtros y paginación."
         actions={
           <Button asChild size="sm">
