@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoaderCircle } from 'lucide-react'
-import { useEffect, type ChangeEvent, type KeyboardEvent } from 'react'
+import { useEffect, useRef, type ChangeEvent, type KeyboardEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { FormField } from '@/design-system/molecules'
 import { FormLayout } from '@/design-system/templates'
+import { useConsultaDniActiva, useConsultarDni } from '@/modules/usuarios/api/consulta-dni-api'
 import {
   textoMayusculas,
   toUsuarioPayload,
@@ -20,6 +21,12 @@ export interface UsuarioFormProps {
   submitLabel?: string
   onSubmit: (payload: UsuarioPayload) => void
   onCancel?: () => void
+}
+
+function mensajeConsulta(error: unknown) {
+  if (!error) return undefined
+  const texto = error instanceof Error ? error.message : 'No se pudo consultar el DNI'
+  return texto.replace(/^[A-Z0-9]{5}:\s*/, '')
 }
 
 function avanzarConEnter(event: KeyboardEvent<HTMLFormElement>) {
@@ -73,9 +80,36 @@ export function UsuarioForm({
     resolver: zodResolver(usuarioFormSchema),
     defaultValues: defaults,
   })
+  const consultaActiva = useConsultaDniActiva()
+  const consultarDni = useConsultarDni()
+  const consultar = useRef(consultarDni.mutate)
+  consultar.current = consultarDni.mutate
+  const dniInicial = useRef(initial?.dni ?? '')
+  const dniConsultado = useRef('')
 
   const tipo = form.watch('tipo_persona')
+  const dni = form.watch('dni')
   const soloLetras = tipo === 'natural'
+  const buscarDni = tipo === 'natural' && consultaActiva.data === true
+
+  useEffect(() => {
+    if (!buscarDni || !/^\d{8}$/.test(dni) || dni === dniInicial.current || dniConsultado.current === dni) {
+      return
+    }
+    dniConsultado.current = dni
+    consultar.current(dni, {
+      onSuccess: (persona) => {
+        if (form.getValues('dni') !== dni) return
+        form.setValue('nombres', textoMayusculas(persona.nombres, true), { shouldValidate: true })
+        form.setValue('apellido_paterno', textoMayusculas(persona.apellidoPaterno, true), {
+          shouldValidate: true,
+        })
+        form.setValue('apellido_materno', textoMayusculas(persona.apellidoMaterno, true), {
+          shouldValidate: true,
+        })
+      },
+    })
+  }, [buscarDni, dni, form])
 
   function registrarTexto(
     nombre: 'nombres' | 'apellido_paterno' | 'apellido_materno' | 'direccion' | 'email',
@@ -107,6 +141,7 @@ export function UsuarioForm({
   }
 
   useEffect(() => {
+    dniInicial.current = initial?.dni ?? ''
     if (!initial) return
     const letras = initial.tipo_persona === 'natural'
     form.reset({
@@ -170,11 +205,28 @@ export function UsuarioForm({
           </Select>
         </FormField>
 
+        {tipo === 'natural' ? (
+          <FormField
+            label="DNI"
+            htmlFor="dni"
+            error={form.formState.errors.dni?.message ?? mensajeConsulta(consultarDni.error)}
+            hint={
+              buscarDni
+                ? consultarDni.isPending
+                  ? 'Buscando el DNI…'
+                  : 'Al completar el DNI se completan los nombres y apellidos.'
+                : undefined
+            }
+          >
+            <Input id="dni" {...registrarDigitos('dni', 8)} />
+          </FormField>
+        ) : null}
+
         <FormField
           label={tipo === 'juridica' || tipo === 'institucional' ? 'Razón social / nombre' : 'Nombres'}
           htmlFor="nombres"
           error={form.formState.errors.nombres?.message}
-          className="sm:col-span-2"
+          className={tipo === 'natural' ? undefined : 'sm:col-span-2'}
         >
           <Input id="nombres" {...registrarTexto('nombres', soloLetras)} />
         </FormField>
@@ -194,13 +246,6 @@ export function UsuarioForm({
               error={form.formState.errors.apellido_materno?.message}
             >
               <Input id="apellido_materno" {...registrarTexto('apellido_materno', true)} />
-            </FormField>
-            <FormField
-              label="DNI"
-              htmlFor="dni"
-              error={form.formState.errors.dni?.message}
-            >
-              <Input id="dni" {...registrarDigitos('dni', 8)} />
             </FormField>
             <FormField
               label="Sexo"

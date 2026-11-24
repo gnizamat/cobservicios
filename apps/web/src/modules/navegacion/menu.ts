@@ -10,6 +10,7 @@ import {
   Home,
   Cog,
   Landmark,
+  Plug,
   LayoutDashboard,
   Map,
   MapPinned,
@@ -300,7 +301,7 @@ export const mainNav: NavSection[] = [
   {
     id: 'configuracion',
     label: 'Configuración',
-    description: 'Organización de la JASS, sistema y cobranza',
+    description: 'Organización de la JASS, sistema, cobranza e integraciones',
     icon: Landmark,
     items: [
       {
@@ -326,6 +327,14 @@ export const mainNav: NavSection[] = [
         icon: Banknote,
         status: 'ready',
         description: 'Tarifas, multas, intereses, bancos, cajas y documentos',
+      },
+      {
+        id: 'integraciones',
+        label: 'Integraciones',
+        path: '/configuracion/integraciones',
+        icon: Plug,
+        status: 'ready',
+        description: 'Consulta de DNI para completar nombres al registrar usuarios',
       },
     ],
   },

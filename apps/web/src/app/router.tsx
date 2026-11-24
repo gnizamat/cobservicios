@@ -10,7 +10,12 @@ import {
 } from '@/modules/catalogo'
 import { AsambleasSectionPage } from '@/modules/asambleas'
 import { CobranzaFacturacionesPage, PagosListadoPage } from '@/modules/cobranza'
-import { CobranzaConfigPage, OrganizacionPage, SistemaPage } from '@/modules/configuracion'
+import {
+  CobranzaConfigPage,
+  IntegracionesPage,
+  OrganizacionPage,
+  SistemaPage,
+} from '@/modules/configuracion'
 import { DeudasAnterioresPage, DeudasMensualesPage } from '@/modules/deudas'
 import { FacturacionPage } from '@/modules/facturacion'
 import {
@@ -55,6 +60,7 @@ const implementedExact = new Set([
   '/configuracion/organizacion',
   '/configuracion/sistema',
   '/configuracion/cobranza',
+  '/configuracion/integraciones',
   '/cobranza/facturaciones',
   '/cobranza/pagos',
   '/padron/asambleas',
@@ -104,6 +110,7 @@ export function AppRouter() {
         <Route path="/configuracion/organizacion" element={<OrganizacionPage />} />
         <Route path="/configuracion/sistema" element={<SistemaPage />} />
         <Route path="/configuracion/cobranza" element={<CobranzaConfigPage />} />
+        <Route path="/configuracion/integraciones" element={<IntegracionesPage />} />
 
         <Route path="/cobranza/facturaciones" element={<CobranzaFacturacionesPage />} />
         <Route path="/cobranza/pagos" element={<PagosListadoPage />} />
