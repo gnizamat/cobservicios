@@ -1417,6 +1417,48 @@ export type Database = {
         Args: Record<string, never>
         Returns: Json
       }
+      leer_integracion_ruc: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      guardar_integracion_ruc: {
+        Args: {
+          p_proveedor: string
+          p_token: string
+          p_activa: boolean
+        }
+        Returns: Json
+      }
+      eliminar_credencial_ruc: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      consulta_ruc_activa: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
+      consultar_ruc: {
+        Args: {
+          p_ruc: string
+        }
+        Returns: Json
+      }
+      leer_integracion_ia: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      guardar_integracion_ia: {
+        Args: {
+          p_proveedor: string
+          p_token: string
+          p_modelo: string
+        }
+        Returns: Json
+      }
+      eliminar_credencial_ia: {
+        Args: Record<string, never>
+        Returns: Json
+      }
       buscar_predio_ids: {
         Args: {
           p_search: string

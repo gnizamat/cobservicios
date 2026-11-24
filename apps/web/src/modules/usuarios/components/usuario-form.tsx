@@ -6,6 +6,7 @@ import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { FormField } from '@/design-system/molecules'
 import { FormLayout } from '@/design-system/templates'
 import { useConsultaDniActiva, useConsultarDni } from '@/modules/usuarios/api/consulta-dni-api'
+import { useConsultaRucActiva, useConsultarRuc } from '@/modules/usuarios/api/consulta-ruc-api'
 import {
   textoMayusculas,
   toUsuarioPayload,
@@ -81,16 +82,29 @@ export function UsuarioForm({
     defaultValues: defaults,
   })
   const consultaActiva = useConsultaDniActiva()
+  const consultaRucActiva = useConsultaRucActiva()
   const consultarDni = useConsultarDni()
+  const consultarRuc = useConsultarRuc()
   const consultar = useRef(consultarDni.mutate)
   consultar.current = consultarDni.mutate
+  const consultarEmpresa = useRef(consultarRuc.mutate)
+  consultarEmpresa.current = consultarRuc.mutate
   const dniInicial = useRef(initial?.dni ?? '')
   const dniConsultado = useRef('')
+  const rucInicial = useRef(initial?.ruc ?? '')
+  const rucConsultado = useRef('')
+  const tipoAnterior = useRef(initial?.tipo_persona ?? defaults.tipo_persona)
+  const reiniciarDni = useRef(consultarDni.reset)
+  const reiniciarRuc = useRef(consultarRuc.reset)
+  reiniciarDni.current = consultarDni.reset
+  reiniciarRuc.current = consultarRuc.reset
 
   const tipo = form.watch('tipo_persona')
   const dni = form.watch('dni')
+  const ruc = form.watch('ruc')
   const soloLetras = tipo === 'natural'
   const buscarDni = tipo === 'natural' && consultaActiva.data === true
+  const buscarRuc = tipo !== 'natural' && consultaRucActiva.data === true
 
   useEffect(() => {
     if (!buscarDni || !/^\d{8}$/.test(dni) || dni === dniInicial.current || dniConsultado.current === dni) {
@@ -110,6 +124,43 @@ export function UsuarioForm({
       },
     })
   }, [buscarDni, dni, form])
+
+  useEffect(() => {
+    if (!buscarRuc || !/^\d{11}$/.test(ruc) || ruc === rucInicial.current || rucConsultado.current === ruc) {
+      return
+    }
+    rucConsultado.current = ruc
+    consultarEmpresa.current(ruc, {
+      onSuccess: (empresa) => {
+        if (form.getValues('ruc') !== ruc) return
+        form.setValue('nombres', textoMayusculas(empresa.razonSocial, false), { shouldValidate: true })
+        if (empresa.direccion) {
+          form.setValue('direccion', textoMayusculas(empresa.direccion, false), { shouldValidate: true })
+        }
+      },
+    })
+  }, [buscarRuc, form, ruc])
+
+  useEffect(() => {
+    if (tipo === tipoAnterior.current) return
+    tipoAnterior.current = tipo
+    dniConsultado.current = ''
+    rucConsultado.current = ''
+    dniInicial.current = ''
+    rucInicial.current = ''
+    form.setValue('dni', '')
+    form.setValue('ruc', '')
+    form.setValue('nombres', '')
+    form.setValue('apellido_paterno', '')
+    form.setValue('apellido_materno', '')
+    form.setValue('direccion', '')
+    form.setValue('celular', '')
+    form.setValue('email', '')
+    form.setValue('sexo', '')
+    form.clearErrors()
+    reiniciarDni.current()
+    reiniciarRuc.current()
+  }, [form, tipo])
 
   function registrarTexto(
     nombre: 'nombres' | 'apellido_paterno' | 'apellido_materno' | 'direccion' | 'email',
@@ -141,7 +192,9 @@ export function UsuarioForm({
   }
 
   useEffect(() => {
+    tipoAnterior.current = initial?.tipo_persona ?? defaults.tipo_persona
     dniInicial.current = initial?.dni ?? ''
+    rucInicial.current = initial?.ruc ?? ''
     if (!initial) return
     const letras = initial.tipo_persona === 'natural'
     form.reset({
@@ -220,7 +273,23 @@ export function UsuarioForm({
           >
             <Input id="dni" {...registrarDigitos('dni', 8)} />
           </FormField>
-        ) : null}
+        ) : (
+          <FormField
+            label="RUC"
+            htmlFor="ruc"
+            error={form.formState.errors.ruc?.message ?? mensajeConsulta(consultarRuc.error)}
+            hint={
+              buscarRuc
+                ? consultarRuc.isPending
+                  ? 'Buscando el RUC…'
+                  : 'Al completar el RUC se completa la razón social.'
+                : undefined
+            }
+            className={tipo === 'institucional' ? undefined : 'sm:col-span-2'}
+          >
+            <Input id="ruc" {...registrarDigitos('ruc', 11)} />
+          </FormField>
+        )}
 
         <FormField
           label={tipo === 'juridica' || tipo === 'institucional' ? 'Razón social / nombre' : 'Nombres'}
@@ -259,16 +328,7 @@ export function UsuarioForm({
               </Select>
             </FormField>
           </>
-        ) : (
-          <FormField
-            label="RUC"
-            htmlFor="ruc"
-            error={form.formState.errors.ruc?.message}
-            className={tipo === 'institucional' ? undefined : 'sm:col-span-2'}
-          >
-            <Input id="ruc" {...registrarDigitos('ruc', 11)} />
-          </FormField>
-        )}
+        ) : null}
 
         <FormField
           label="Dirección"
