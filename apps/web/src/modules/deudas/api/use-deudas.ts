@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   deleteDeudaAnterior,
+  generarConvenioMedidor,
   generarDeudasFijas,
   listCostosTarifa,
   listDeudasAnteriores,
+  listPrediosConvenioMedidor,
   listPrediosDeudaFija,
   listTarifasAnio,
   listTerritorioDeuda,
@@ -120,6 +122,30 @@ export function usePrediosDeudaFija(filtros: {
     ),
     queryFn: () => listPrediosDeudaFija(filtros),
     enabled: Boolean(filtros.tipoServicioId) && filtros.anio > 0 && filtros.mes >= 1 && filtros.mes <= 12,
+  })
+}
+
+export function usePrediosConvenioMedidor(filtros: {
+  anio: number
+  sectorId: string
+  calleId: string
+  busqueda: string
+}) {
+  return useQuery({
+    queryKey: deudasQueryKeys.convenios(filtros.anio, filtros.sectorId, filtros.calleId, filtros.busqueda),
+    queryFn: () => listPrediosConvenioMedidor(filtros),
+    enabled: filtros.anio > 1900,
+  })
+}
+
+export function useGenerarConvenioMedidor() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: generarConvenioMedidor,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['deudas', 'convenios'] })
+      await queryClient.invalidateQueries({ queryKey: ['deudas', 'anteriores'] })
+    },
   })
 }
 

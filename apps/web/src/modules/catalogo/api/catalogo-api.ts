@@ -35,6 +35,11 @@ export async function listSectores(): Promise<CatSector[]> {
   return data ?? []
 }
 
+export async function setSectorActivo(id: string, activo: boolean): Promise<void> {
+  const { error } = await supabase.from('cat_sectores').update({ activo }).eq('id', id)
+  if (error) throw asCatalogError(error)
+}
+
 export async function saveSector(
   id: string | null,
   payload: SectorPayload,

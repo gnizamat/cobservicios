@@ -34,6 +34,7 @@ export {
   useTarifas,
   useCostos,
   useSaveSector,
+  useSetSectorActivo,
   useSaveCalle,
   useSaveServicio,
   useSaveTarifa,

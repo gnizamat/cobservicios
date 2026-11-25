@@ -8,6 +8,7 @@ const seccionPorEtiquetaAntigua: Record<string, string> = {
 
 const opcionPorEtiquetaAntigua: Record<string, string> = {
   'Usuarios de servicio': 'usuarios-servicio',
+  'Deudas únicas': 'deudas-unicas',
 }
 
 export interface AccesoRol {

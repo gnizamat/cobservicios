@@ -6,6 +6,7 @@ import type {
   PredioBusqueda,
   PredioDeudaOption,
   GenerarDeudasFijasResultado,
+  PredioConvenio,
   PredioDeudaFija,
   TarifaAnio,
   UsuarioPredio,
@@ -71,7 +72,7 @@ export type TerritorioDeuda = {
 
 export async function listTerritorioDeuda(): Promise<TerritorioDeuda> {
   const [sectores, calles] = await Promise.all([
-    supabase.from('cat_sectores').select('id, nombre').order('nombre'),
+    supabase.from('cat_sectores').select('id, nombre').eq('activo', true).order('nombre'),
     supabase.from('cat_calles').select('id, nombre, sector_id').order('nombre'),
   ])
   if (sectores.error) throw asDeudaError(sectores.error)
@@ -235,6 +236,80 @@ export async function listPrediosDeudaFija(filtros: {
     sector: jsonText(row.sector),
     calle: jsonText(row.calle),
   }))
+}
+
+export interface ConvenioMedidorLista {
+  servicioId: string
+  servicio: string
+  anio: number
+  monto: number
+  predios: PredioConvenio[]
+}
+
+export interface GenerarConvenioResultado {
+  servicio: string
+  monto: number
+  cuotas: number
+  cuota: number
+  ultima: number
+  predios: number
+  generadas: number
+}
+
+export async function listPrediosConvenioMedidor(filtros: {
+  anio: number
+  sectorId?: string
+  calleId?: string
+  busqueda?: string
+}): Promise<ConvenioMedidorLista> {
+  const { data, error } = await supabase.rpc('listar_predios_convenio_medidor', {
+    p_anio: filtros.anio,
+    p_sector_id: filtros.sectorId && filtros.sectorId !== 'all' ? filtros.sectorId : null,
+    p_calle_id: filtros.calleId && filtros.calleId !== 'all' ? filtros.calleId : null,
+    p_busqueda: filtros.busqueda?.trim() ? filtros.busqueda.trim() : null,
+  })
+  if (error) throw asDeudaError(error)
+  const payload = data && typeof data === 'object' && !Array.isArray(data) ? data : {}
+  const predios = payload.predios
+  return {
+    servicioId: jsonText(payload.servicio_id),
+    servicio: jsonText(payload.servicio),
+    anio: Number(payload.anio) || filtros.anio,
+    monto: Number(payload.monto) || 0,
+    predios: asObjectRows(Array.isArray(predios) ? predios : []).map((row) => ({
+      predio_id: jsonText(row.predio_id),
+      predio: jsonText(row.predio),
+      numero: jsonText(row.numero),
+      usuario: jsonText(row.usuario),
+      dni: jsonText(row.dni),
+      ruc: jsonText(row.ruc),
+      sector: jsonText(row.sector),
+      calle: jsonText(row.calle),
+    })),
+  }
+}
+
+export async function generarConvenioMedidor(input: {
+  fecha: string
+  cuotas: number
+  predioIds: string[]
+}): Promise<GenerarConvenioResultado> {
+  const { data, error } = await supabase.rpc('generar_convenio_medidor', {
+    p_fecha: input.fecha,
+    p_cuotas: input.cuotas,
+    p_predio_ids: input.predioIds,
+  })
+  if (error) throw asDeudaError(error)
+  const payload = data && typeof data === 'object' && !Array.isArray(data) ? data : {}
+  return {
+    servicio: jsonText(payload.servicio),
+    monto: Number(payload.monto) || 0,
+    cuotas: Number(payload.cuotas) || input.cuotas,
+    cuota: Number(payload.cuota) || 0,
+    ultima: Number(payload.ultima) || 0,
+    predios: Number(payload.predios) || 0,
+    generadas: Number(payload.generadas) || 0,
+  }
 }
 
 export async function generarDeudasFijas(input: {

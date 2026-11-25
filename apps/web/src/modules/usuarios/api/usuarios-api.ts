@@ -28,7 +28,7 @@ export async function listUsuarios(
   const term = sanitizeSearchTerm(search)
 
   let query = supabase
-    .from('pad_usuarios')
+    .from('pad_usuarios_centro_activo')
     .select('*', { count: 'exact' })
     .order('apellido_paterno', { ascending: true })
     .order('nombres', { ascending: true })

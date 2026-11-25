@@ -73,8 +73,17 @@ export function useEliminarFacturacion() {
 export function useGenerarFacturacion() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: ({ anio, mes, predioIds }: { anio: number; mes: number; predioIds: string[] }) =>
-      generarFacturacion(anio, mes, predioIds),
+    mutationFn: ({
+      anio,
+      mes,
+      predioIds,
+      cajaId,
+    }: {
+      anio: number
+      mes: number
+      predioIds: string[]
+      cajaId: string
+    }) => generarFacturacion(anio, mes, predioIds, cajaId),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['facturacion', 'pendientes'] })
       void client.invalidateQueries({ queryKey: ['facturacion', 'generadas'] })

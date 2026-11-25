@@ -41,7 +41,7 @@ function uno<T>(value: T | T[] | null | undefined): T | null {
 }
 
 export async function listSectoresAsamblea(): Promise<Pick<CatSector, 'id' | 'nombre'>[]> {
-  const { data, error } = await supabase.from('cat_sectores').select('id, nombre').order('nombre')
+  const { data, error } = await supabase.from('cat_sectores').select('id, nombre').eq('activo', true).order('nombre')
   if (error) fail(error)
   return data ?? []
 }

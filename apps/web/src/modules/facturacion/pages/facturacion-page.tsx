@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Printer, Trash2 } from 'lucide-react'
 import { Button, Icon, Select } from '@/design-system/atoms'
 import { PageHeader } from '@/design-system/molecules'
 import { AppShell } from '@/design-system/templates'
+import { useCajas } from '@/modules/cobranza/api'
+import { etiquetaCaja } from '@/modules/cobranza/labels'
 import {
   useDeudasAFacturar,
   useFacturacionesGeneradas,
@@ -74,6 +76,7 @@ export function FacturacionPage() {
   const hoy = new Date()
   const [sectorId, setSectorId] = useState('all')
   const [calleId, setCalleId] = useState('all')
+  const [cajaId, setCajaId] = useState('')
   const [anioElegido, setAnioElegido] = useState<number | null>(null)
   const [mes, setMes] = useState(String(hoy.getMonth() + 1))
   const [vista, setVista] = useState<'pendientes' | 'generadas'>('pendientes')
@@ -83,6 +86,7 @@ export function FacturacionPage() {
   const [eliminar, setEliminar] = useState<FacturacionGenerada | null>(null)
   const territorio = useTerritorioFacturacion()
   const tarifas = useTarifasFacturacion()
+  const cajas = useCajas()
   const anio =
     anioElegido ??
     tarifas.data?.find((tarifa) => tarifa.activa)?.anio ??
@@ -116,6 +120,25 @@ export function FacturacionPage() {
       ...calles.map((calle) => ({ value: calle.id, label: calle.nombre })),
     ]
   }, [territorio.data?.calles, sectorId])
+  const cajasVisibles = useMemo(() => {
+    const todas = cajas.data ?? []
+    if (sectorId === 'all') return todas
+    return todas.filter((caja) => caja.sectorId == null || caja.sectorId === sectorId)
+  }, [cajas.data, sectorId])
+  const cajaOptions = useMemo(
+    () =>
+      cajasVisibles.map((caja) => ({
+        value: caja.id,
+        label: etiquetaCaja(caja.nombre, caja.sector, caja.usuario),
+      })),
+    [cajasVisibles],
+  )
+
+  useEffect(() => {
+    if (cajasVisibles.some((caja) => caja.id === cajaId)) return
+    setCajaId(cajasVisibles[0]?.id ?? '')
+  }, [cajaId, cajasVisibles])
+
   const anioOptions = useMemo(() => {
     const years = new Set((tarifas.data ?? []).map((tarifa) => tarifa.anio))
     years.add(anio)
@@ -141,9 +164,10 @@ export function FacturacionPage() {
   }
 
   function generarSeleccion() {
+    if (!cajaId) return
     setAviso(null)
     generar.mutate(
-      { anio, mes: Number(mes), predioIds: [...selected] },
+      { anio, mes: Number(mes), predioIds: [...selected], cajaId },
       {
         onSuccess: (resultado) => {
           setPicked(null)
@@ -166,12 +190,12 @@ export function FacturacionPage() {
     <AppShell>
       <PageHeader
         title="Facturación"
-        description="Elegí el centro poblado, la calle, el año y el mes. Cada facturación junta todas las deudas registradas de ese mes en el predio."
+        description="Elegí la caja, el centro poblado, la calle, el año y el mes. Cada facturación queda en esa caja y junta las deudas de ese mes en el predio."
         actions={
           <Button
             type="button"
             size="sm"
-            disabled={vista !== 'pendientes' || selected.size === 0 || generar.isPending}
+            disabled={vista !== 'pendientes' || selected.size === 0 || !cajaId || generar.isPending}
             onClick={generarSeleccion}
           >
             {generar.isPending
@@ -182,6 +206,12 @@ export function FacturacionPage() {
       />
 
       <div className="mb-4 flex flex-col gap-3 rounded-lg border border-border/80 bg-card/60 p-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <ParamSelect
+          label="Caja"
+          value={cajaOptions.some((option) => option.value === cajaId) ? cajaId : ''}
+          options={cajaOptions.length ? cajaOptions : [{ value: '', label: 'No hay cajas activas' }]}
+          onChange={setCajaId}
+        />
         <ParamSelect label="Centro poblado" value={sectorId} options={sectorOptions} onChange={cambiarSector} />
         <ParamSelect
           label="Calle"
@@ -402,6 +432,7 @@ function GeneradasTable({
           <thead className="bg-secondary/50 text-left text-[11px] tracking-wide text-muted-foreground uppercase">
             <tr>
               <th className="px-2.5 py-2 font-semibold">Número</th>
+              <th className="px-2.5 py-2 font-semibold">Caja</th>
               <th className="px-2.5 py-2 font-semibold">Predio</th>
               <th className="px-2.5 py-2 font-semibold">Usuario</th>
               <th className="px-2.5 py-2 font-semibold">Calle</th>
@@ -415,6 +446,7 @@ function GeneradasTable({
             {rows.map((row) => (
               <tr key={row.id} className="border-t border-border">
                 <td className="px-2.5 py-1.5 font-medium">{row.numero}</td>
+                <td className="px-2.5 py-1.5">{row.caja || '—'}</td>
                 <td className="px-2.5 py-1.5">{predioFacturaLabel(row.predio, row.numero_predio)}</td>
                 <td className="px-2.5 py-1.5">{row.usuario}</td>
                 <td className="px-2.5 py-1.5 text-muted-foreground">{row.calle || '—'}</td>

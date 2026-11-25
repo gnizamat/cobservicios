@@ -117,7 +117,9 @@ export function MapaPrediosPage() {
               className="h-8 text-sm text-foreground"
             >
               <option value="all">Todos los centros poblados</option>
-              {(sectores.data ?? []).map((sector) => (
+              {(sectores.data ?? [])
+                .filter((sector) => sector.activo)
+                .map((sector) => (
                 <option key={sector.id} value={sector.id}>
                   {sector.nombre}
                 </option>

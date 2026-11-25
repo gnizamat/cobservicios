@@ -11,6 +11,7 @@ import {
   saveSector,
   saveServicio,
   saveTarifa,
+  setSectorActivo,
 } from '@/modules/catalogo/api/catalogo-api'
 import { catalogoQueryKeys } from '@/modules/catalogo/api/query-keys'
 import type {
@@ -39,6 +40,26 @@ export function useSectores() {
   return useQuery({
     queryKey: catalogoQueryKeys.sectores,
     queryFn: listSectores,
+  })
+}
+
+export function useSetSectorActivo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, activo }: { id: string; activo: boolean }) => setSectorActivo(id, activo),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['catalogo'] }),
+        queryClient.invalidateQueries({ queryKey: ['predios'] }),
+        queryClient.invalidateQueries({ queryKey: ['usuarios'] }),
+        queryClient.invalidateQueries({ queryKey: ['deudas'] }),
+        queryClient.invalidateQueries({ queryKey: ['facturacion'] }),
+        queryClient.invalidateQueries({ queryKey: ['cobranza'] }),
+        queryClient.invalidateQueries({ queryKey: ['lecturas'] }),
+        queryClient.invalidateQueries({ queryKey: ['asambleas'] }),
+        queryClient.invalidateQueries({ queryKey: ['configuracion'] }),
+      ])
+    },
   })
 }
 

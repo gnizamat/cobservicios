@@ -194,7 +194,7 @@ export async function getUsuarioTitular(id: string): Promise<UsuarioTitular | nu
 
 export async function listPredioCatalogs() {
   const [sectores, calles, tipos] = await Promise.all([
-    supabase.from('cat_sectores').select('*').order('nombre'),
+    supabase.from('cat_sectores').select('*').eq('activo', true).order('nombre'),
     supabase.from('cat_calles').select('*').order('nombre'),
     supabase.from('cat_tipos_predio').select('*').order('nombre'),
   ])

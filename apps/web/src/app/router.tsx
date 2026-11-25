@@ -16,7 +16,7 @@ import {
   OrganizacionPage,
   SistemaPage,
 } from '@/modules/configuracion'
-import { DeudasAnterioresPage, DeudasMensualesPage } from '@/modules/deudas'
+import { DeudasAnterioresPage, DeudasConveniosPage, DeudasMensualesPage } from '@/modules/deudas'
 import { FacturacionPage } from '@/modules/facturacion'
 import {
   ControlHidrometricoPage,
@@ -56,6 +56,7 @@ const implementedExact = new Set([
   '/hidrometria/control',
   '/facturacion/deudas-anteriores',
   '/facturacion/deudas-mensuales',
+  '/facturacion/deudas-unicas',
   '/facturacion',
   '/configuracion/organizacion',
   '/configuracion/sistema',
@@ -105,6 +106,7 @@ export function AppRouter() {
 
         <Route path="/facturacion/deudas-anteriores" element={<DeudasAnterioresPage />} />
         <Route path="/facturacion/deudas-mensuales" element={<DeudasMensualesPage />} />
+        <Route path="/facturacion/deudas-unicas" element={<DeudasConveniosPage />} />
         <Route path="/facturacion" element={<FacturacionPage />} />
 
         <Route path="/configuracion/organizacion" element={<OrganizacionPage />} />

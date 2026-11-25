@@ -595,8 +595,12 @@ function CajaForm({
   const [usuarioId, setUsuarioId] = useState(usuarioInicial)
   const [activa, setActiva] = useState<EstadoRegistro>(activaInicial ? 'activo' : 'inactivo')
   const [local, setLocal] = useState<string | null>(null)
-  const opciones = [...(sectores.data ?? [])].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
-  const personas = [...(usuarios.data ?? [])].sort((a, b) => {
+  const opciones = [...(sectores.data ?? [])]
+    .filter((sector) => sector.activo)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+  const personas = [...(usuarios.data ?? [])]
+    .filter((usuario) => !sectorId || usuario.sectorId == null || usuario.sectorId === sectorId)
+    .sort((a, b) => {
     if (a.activo !== b.activo) return a.activo ? -1 : 1
     return (a.nombre || a.email).localeCompare(b.nombre || b.email, 'es')
   })

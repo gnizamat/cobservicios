@@ -7,7 +7,9 @@
   useTerritorioDeuda,
   useSaveDeudasAnteriores,
   usePrediosDeudaFija,
+  usePrediosConvenioMedidor,
   useGenerarDeudasFijas,
+  useGenerarConvenioMedidor,
 } from './use-deudas'
 export type {
   CostoTarifaOption,

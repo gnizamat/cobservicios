@@ -24,12 +24,14 @@ export type Database = {
           id: string
           codigo: string
           nombre: string
+          activo: boolean
           created_at: string
         }
         Insert: {
           id?: string
           codigo: string
           nombre: string
+          activo?: boolean
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['cat_sectores']['Insert']>
@@ -673,6 +675,7 @@ export type Database = {
           monto_total: number
           fecha: string
           estado: string
+          caja_id: string
           created_at: string
           updated_at: string
         }
@@ -685,6 +688,7 @@ export type Database = {
           monto_total: number
           fecha?: string
           estado?: string
+          caja_id: string
           created_at?: string
           updated_at?: string
         }
@@ -695,6 +699,13 @@ export type Database = {
             columns: ['predio_id']
             isOneToOne: false
             referencedRelation: 'pad_predios'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'fac_facturaciones_caja_id_fkey'
+            columns: ['caja_id']
+            isOneToOne: false
+            referencedRelation: 'cob_cajas'
             referencedColumns: ['id']
           },
         ]
@@ -1232,7 +1243,12 @@ export type Database = {
         Relationships: []
       }
     }
-    Views: Record<string, never>
+    Views: {
+      pad_usuarios_centro_activo: {
+        Row: Database['public']['Tables']['pad_usuarios']['Row']
+        Relationships: []
+      }
+    }
     Functions: {
       registrar_transferencia_predios: {
         Args: {
@@ -1262,6 +1278,23 @@ export type Database = {
         }
         Returns: Json
       }
+      listar_predios_convenio_medidor: {
+        Args: {
+          p_anio: number
+          p_sector_id?: string | null
+          p_calle_id?: string | null
+          p_busqueda?: string | null
+        }
+        Returns: Json
+      }
+      generar_convenio_medidor: {
+        Args: {
+          p_fecha: string
+          p_cuotas: number
+          p_predio_ids: string[]
+        }
+        Returns: Json
+      }
       listar_deudas_a_facturar: {
         Args: {
           p_anio: number
@@ -1285,6 +1318,7 @@ export type Database = {
           p_anio: number
           p_mes: number
           p_predio_ids: string[]
+          p_caja_id: string
         }
         Returns: Json
       }

@@ -52,6 +52,11 @@ export type PredioDeudaFija = {
   calle: string
 }
 
+export type PredioConvenio = PredioDeudaFija & {
+  dni: string
+  ruc: string
+}
+
 export type GenerarDeudasFijasResultado = {
   generadas: number
   monto: number

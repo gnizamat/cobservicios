@@ -25,6 +25,7 @@ export function CallesPage() {
     () => [
       { value: 'all', label: 'Todos los centros poblados' },
       ...[...(sectores.data ?? [])]
+        .filter((sector) => sector.activo)
         .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
         .map((sector) => ({ value: sector.id, label: sector.nombre })),
     ],
@@ -115,7 +116,7 @@ export function CallesPage() {
           <CalleForm
             key={selection.selected?.id ?? 'new'}
             initial={selection.selected}
-            sectores={sectores.data ?? []}
+            sectores={(sectores.data ?? []).filter((sector) => sector.activo)}
             submitting={save.isPending}
             onSubmit={(payload) => {
               save.mutate(

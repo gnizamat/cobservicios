@@ -88,7 +88,7 @@ function nullableId(value: string) {
 
 export async function listTerritorioCobranza(): Promise<TerritorioCobranza> {
   const [sectores, calles] = await Promise.all([
-    supabase.from('cat_sectores').select('id, nombre').order('nombre'),
+    supabase.from('cat_sectores').select('id, nombre').eq('activo', true).order('nombre'),
     supabase.from('cat_calles').select('id, nombre, sector_id').order('nombre'),
   ])
   if (sectores.error) throw asCobranzaError(sectores.error)

@@ -5,4 +5,6 @@ export const deudasQueryKeys = {
   anteriores: (predioId: string) => ['deudas', 'anteriores', predioId] as const,
   mensuales: (anio: number, mes: number, servicioId: string, sectorId: string, calleId: string) =>
     ['deudas', 'mensuales', anio, mes, servicioId, sectorId, calleId] as const,
+  convenios: (anio: number, sectorId: string, calleId: string, busqueda: string) =>
+    ['deudas', 'convenios', anio, sectorId, calleId, busqueda] as const,
 }

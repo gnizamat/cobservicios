@@ -338,7 +338,9 @@ function CentroPobladoField({
   onChange: (value: string) => void
 }) {
   const sectores = useSectores()
-  const opciones = [...(sectores.data ?? [])].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+  const opciones = [...(sectores.data ?? [])]
+    .filter((sector) => sector.activo)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
 
   return (
     <Campo label="Centro poblado">

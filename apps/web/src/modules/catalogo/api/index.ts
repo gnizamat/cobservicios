@@ -20,6 +20,7 @@ export {
   useSaveCalle,
   useSaveCosto,
   useSaveSector,
+  useSetSectorActivo,
   useSaveServicio,
   useSaveTarifa,
   useSectores,

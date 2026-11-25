@@ -188,10 +188,11 @@ export const mainNav: NavSection[] = [
       },
       {
         id: 'deudas-unicas',
-        label: 'Deudas únicas',
+        label: 'Deudas convenios',
         path: '/facturacion/deudas-unicas',
         legacyId: 68,
-        status: 'soon',
+        status: 'ready',
+        description: 'Costo del medidor en cuotas fijas desde la fecha del convenio',
       },
       {
         id: 'deudas-volumen',
