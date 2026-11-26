@@ -6,6 +6,7 @@ import {
   listEstructuras,
   listValoresVolumen,
   listLecturas,
+  listLecturadores,
   listMarcasMedidor,
   listTerritorioLectura,
   listServicioOptions,
@@ -102,6 +103,13 @@ export function useSaveMedidor() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: lecturasQueryKeys.predios })
     },
+  })
+}
+
+export function useLecturadores() {
+  return useQuery({
+    queryKey: lecturasQueryKeys.lecturadores,
+    queryFn: listLecturadores,
   })
 }
 

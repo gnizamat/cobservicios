@@ -12,6 +12,7 @@ import { AsambleasSectionPage } from '@/modules/asambleas'
 import { CobranzaFacturacionesPage, PagosListadoPage } from '@/modules/cobranza'
 import {
   CobranzaConfigPage,
+  HidrometriaConfigPage,
   IntegracionesPage,
   OrganizacionPage,
   SistemaPage,
@@ -61,6 +62,7 @@ const implementedExact = new Set([
   '/configuracion/organizacion',
   '/configuracion/sistema',
   '/configuracion/cobranza',
+  '/configuracion/hidrometria',
   '/configuracion/integraciones',
   '/cobranza/facturaciones',
   '/cobranza/pagos',
@@ -112,6 +114,7 @@ export function AppRouter() {
         <Route path="/configuracion/organizacion" element={<OrganizacionPage />} />
         <Route path="/configuracion/sistema" element={<SistemaPage />} />
         <Route path="/configuracion/cobranza" element={<CobranzaConfigPage />} />
+        <Route path="/configuracion/hidrometria" element={<HidrometriaConfigPage />} />
         <Route path="/configuracion/integraciones" element={<IntegracionesPage />} />
 
         <Route path="/cobranza/facturaciones" element={<CobranzaFacturacionesPage />} />

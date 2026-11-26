@@ -402,6 +402,55 @@ export type Database = {
           },
         ]
       }
+      hid_colaboradores: {
+        Row: {
+          id: string
+          dni: string
+          apellido_paterno: string
+          apellido_materno: string
+          nombres: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          dni: string
+          apellido_paterno?: string
+          apellido_materno?: string
+          nombres: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['hid_colaboradores']['Insert']>
+        Relationships: []
+      }
+      hid_colaborador_sectores: {
+        Row: {
+          colaborador_id: string
+          sector_id: string
+        }
+        Insert: {
+          colaborador_id: string
+          sector_id: string
+        }
+        Update: Partial<Database['public']['Tables']['hid_colaborador_sectores']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'hid_colaborador_sectores_colaborador_id_fkey'
+            columns: ['colaborador_id']
+            isOneToOne: false
+            referencedRelation: 'hid_colaboradores'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'hid_colaborador_sectores_sector_id_fkey'
+            columns: ['sector_id']
+            isOneToOne: false
+            referencedRelation: 'cat_sectores'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       hid_estructuras: {
         Row: {
           id: string
@@ -422,11 +471,13 @@ export type Database = {
         Row: {
           id: string
           nombre: string
+          procedencia: string
           created_at: string
         }
         Insert: {
           id?: string
           nombre: string
+          procedencia?: string
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['hid_marcas_medidor']['Insert']>
@@ -485,6 +536,7 @@ export type Database = {
           lectura_lt: number
           volumen_m3: number
           referencia: string
+          colaborador_id: string | null
           created_at: string
           updated_at: string
         }
@@ -499,6 +551,7 @@ export type Database = {
           lectura_lt?: number
           volumen_m3?: number
           referencia?: string
+          colaborador_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -1250,6 +1303,17 @@ export type Database = {
       }
     }
     Functions: {
+      guardar_colaborador_hidrometria: {
+        Args: {
+          p_id: string | null
+          p_dni: string
+          p_apellido_paterno: string
+          p_apellido_materno: string
+          p_nombres: string
+          p_sector_ids: string[]
+        }
+        Returns: string
+      }
       registrar_transferencia_predios: {
         Args: {
           p_usuario_origen_id: string
@@ -1416,6 +1480,7 @@ export type Database = {
           p_lectura_lt: number
           p_volumen_m3: number
           p_referencia: string
+          p_colaborador_id?: string | null
         }
         Returns: Json
       }

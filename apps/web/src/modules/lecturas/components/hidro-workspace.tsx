@@ -18,5 +18,5 @@ export interface HidroWorkspaceProps {
 }
 
 export function HidroWorkspace(props: HidroWorkspaceProps) {
-  return <RecordWorkspace {...props} />
+  return <RecordWorkspace wide {...props} />
 }

@@ -17,7 +17,7 @@ import {
 export type PredioListItem = PadPredio & {
   usuario: Pick<
     PadUsuario,
-    'id' | 'nombres' | 'apellido_paterno' | 'apellido_materno' | 'tipo_persona'
+    'id' | 'nombres' | 'apellido_paterno' | 'apellido_materno' | 'tipo_persona' | 'dni' | 'ruc'
   > | null
   sector: Pick<CatSector, 'id' | 'nombre'> | null
   calle: Pick<CatCalle, 'id' | 'nombre'> | null
@@ -36,7 +36,7 @@ export interface PrediosListQuery {
 
 const PREDIO_LIST_SELECT = `
   *,
-  usuario:pad_usuarios ( id, nombres, apellido_paterno, apellido_materno, tipo_persona ),
+  usuario:pad_usuarios ( id, nombres, apellido_paterno, apellido_materno, tipo_persona, dni, ruc ),
   sector:cat_sectores ( id, nombre ),
   calle:cat_calles ( id, nombre ),
   tipo_predio:cat_tipos_predio ( id, nombre )

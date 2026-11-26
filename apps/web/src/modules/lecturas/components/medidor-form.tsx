@@ -35,7 +35,7 @@ export function MedidorForm({
   const period = currentPeriod()
   const marcasForm =
     initial?.marca_id && !marcas.some((marca) => marca.id === initial.marca_id)
-      ? [{ id: initial.marca_id, nombre: initial.marca || 'Marca asignada' }, ...marcas]
+      ? [{ id: initial.marca_id, nombre: initial.marca || 'Marca asignada', procedencia: '' }, ...marcas]
       : marcas
   const form = useForm<MedidorFormValues>({
     resolver: zodResolver(medidorFormSchema),
@@ -82,7 +82,7 @@ export function MedidorForm({
             <option value="">Seleccioná la marca</option>
             {marcasForm.map((marca) => (
               <option key={marca.id} value={marca.id}>
-                {marca.nombre}
+                {marca.procedencia.trim() ? `${marca.nombre} · ${marca.procedencia}` : marca.nombre}
               </option>
             ))}
           </Select>

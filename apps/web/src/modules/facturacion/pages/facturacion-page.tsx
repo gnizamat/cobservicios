@@ -187,7 +187,7 @@ export function FacturacionPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell className="max-w-none">
       <PageHeader
         title="Facturación"
         description="Elegí la caja, el centro poblado, la calle, el año y el mes. Cada facturación queda en esa caja y junta las deudas de ese mes en el predio."

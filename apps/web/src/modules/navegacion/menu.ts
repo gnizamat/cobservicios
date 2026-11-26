@@ -302,7 +302,7 @@ export const mainNav: NavSection[] = [
   {
     id: 'configuracion',
     label: 'Configuración',
-    description: 'Organización de la JASS, sistema, cobranza e integraciones',
+    description: 'Organización de la JASS, sistema, cobranza, hidrometría e integraciones',
     icon: Landmark,
     items: [
       {
@@ -328,6 +328,14 @@ export const mainNav: NavSection[] = [
         icon: Banknote,
         status: 'ready',
         description: 'Tarifas, multas, intereses, bancos, cajas y documentos',
+      },
+      {
+        id: 'config-hidrometria',
+        label: 'Hidrometría',
+        path: '/configuracion/hidrometria',
+        icon: Gauge,
+        status: 'ready',
+        description: 'Colaboradores de lecturas y marcas de medidor',
       },
       {
         id: 'integraciones',

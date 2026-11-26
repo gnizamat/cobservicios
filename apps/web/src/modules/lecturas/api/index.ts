@@ -4,6 +4,7 @@
   listEstructuras,
   listValoresVolumen,
   listLecturas,
+  listLecturadores,
   listTerritorioLectura,
   listMarcasMedidor,
   searchPredios,
@@ -17,6 +18,7 @@
 export type {
   ControlListItem,
   LecturaListItem,
+  LecturadorOption,
   MarcaMedidor,
   MedidorAsignado,
   PredioBusqueda,
@@ -33,6 +35,7 @@ export {
   useControles,
   useEstructuras,
   useLecturas,
+  useLecturadores,
   useMarcasMedidor,
   usePagedPredios,
   useTerritorioLectura,

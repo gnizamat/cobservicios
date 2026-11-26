@@ -25,6 +25,7 @@ export const lecturaFormSchema = z.object({
   fecha_lectura: fecha,
   lectura_m3: amount,
   lectura_lt: amount,
+  colaborador_id: z.string().trim(),
 })
 
 export type LecturaFormValues = z.infer<typeof lecturaFormSchema>
@@ -39,6 +40,7 @@ export interface LecturaPayload {
   lectura_lt: number
   volumen_m3: number
   referencia: string
+  colaborador_id: string | null
 }
 
 export function toLecturaPayload(values: LecturaFormValues, volumenM3: number): LecturaPayload {
@@ -52,6 +54,7 @@ export function toLecturaPayload(values: LecturaFormValues, volumenM3: number): 
     lectura_lt: Number(values.lectura_lt),
     volumen_m3: Math.round(volumenM3 * 1000) / 1000,
     referencia: values.referencia.trim(),
+    colaborador_id: values.colaborador_id || null,
   }
 }
 

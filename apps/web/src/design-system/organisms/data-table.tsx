@@ -15,6 +15,8 @@ export interface DataTableProps<T> {
   renderCell: (row: T, columnKey: string) => ReactNode
   /** Compacta filas y tipografía para listados densos. */
   density?: 'comfortable' | 'compact'
+  /** Reparte el ancho de la tabla entre las columnas. */
+  layout?: 'auto' | 'fixed'
   className?: string
   /** Resalta la fila cuyo `rowKey` coincide. */
   selectedKey?: string
@@ -29,6 +31,7 @@ export function DataTable<T>({
   emptyMessage,
   renderCell,
   density = 'compact',
+  layout = 'auto',
   className,
   selectedKey,
   onRowSelect,
@@ -52,7 +55,13 @@ export function DataTable<T>({
       )}
     >
       <div className="overflow-x-auto">
-        <table className={cn('min-w-full', density === 'compact' ? 'text-[13px]' : 'text-sm')}>
+        <table
+          className={cn(
+            'min-w-full',
+            layout === 'fixed' && 'table-fixed',
+            density === 'compact' ? 'text-[13px]' : 'text-sm',
+          )}
+        >
           <thead className="bg-secondary/50 text-left text-[11px] tracking-wide text-muted-foreground uppercase">
             <tr>
               {columns.map((column) => (

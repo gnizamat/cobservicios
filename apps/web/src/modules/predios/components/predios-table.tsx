@@ -16,12 +16,20 @@ function usuarioLabel(item: PredioListItem) {
   return user.nombres
 }
 
+function documentoLabel(item: PredioListItem) {
+  const user = item.usuario
+  if (user?.dni?.trim()) return `DNI ${user.dni.trim()}`
+  if (user?.ruc?.trim()) return `RUC ${user.ruc.trim()}`
+  return '—'
+}
+
 const columns = [
-  { key: 'predio', header: 'Predio' },
-  { key: 'titular', header: 'Titular' },
-  { key: 'ubicacion', header: 'Ubicación' },
-  { key: 'estado', header: 'Estado', className: 'w-[6.5rem]' },
-  { key: 'acciones', header: '', className: 'w-10 text-right' },
+  { key: 'documento', header: 'Documento', className: 'w-[14%] whitespace-nowrap px-4' },
+  { key: 'titular', header: 'Titular', className: 'w-[22%] px-4' },
+  { key: 'predio', header: 'Predio', className: 'w-[20%] px-4' },
+  { key: 'ubicacion', header: 'Ubicación', className: 'w-[28%] px-4' },
+  { key: 'estado', header: 'Estado', className: 'w-[12%] px-4' },
+  { key: 'acciones', header: '', className: 'w-12 px-3 text-right' },
 ]
 
 export function PrediosTable({
@@ -33,6 +41,7 @@ export function PrediosTable({
 }) {
   return (
     <DataTable
+      layout="fixed"
       columns={columns}
       rows={rows}
       rowKey={(row) => row.id}
@@ -40,26 +49,29 @@ export function PrediosTable({
       emptyMessage="No hay predios con esos filtros."
       renderCell={(row, key) => {
         switch (key) {
-          case 'predio':
+          case 'documento':
+            return <span className="tabular-nums text-foreground">{documentoLabel(row)}</span>
+          case 'predio': {
+            const detalle =
+              [
+                row.manzana && `Mz ${row.manzana}`,
+                row.lote && `Lt ${row.lote}`,
+                row.numero && `N° ${row.numero}`,
+              ]
+                .filter(Boolean)
+                .join(' · ') || row.tipo_predio?.nombre
             return (
-              <div className="min-w-0">
-                <p className="truncate font-medium text-foreground">{row.nombre}</p>
-                <p className="text-[11px] text-muted-foreground">
-                  {[
-                    row.manzana && `Mz ${row.manzana}`,
-                    row.lote && `Lt ${row.lote}`,
-                    row.numero && `N° ${row.numero}`,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ') || row.tipo_predio?.nombre || '—'}
-                </p>
-              </div>
+              <p className="truncate">
+                <span className="font-medium text-foreground">{row.nombre}</span>
+                {detalle ? <span className="text-muted-foreground"> · {detalle}</span> : null}
+              </p>
             )
+          }
           case 'titular':
-            return <span className="line-clamp-2 text-foreground">{usuarioLabel(row)}</span>
+            return <span className="block truncate text-foreground">{usuarioLabel(row)}</span>
           case 'ubicacion':
             return (
-              <span className="line-clamp-2 text-muted-foreground">
+              <span className="block truncate text-muted-foreground">
                 {[row.sector?.nombre, row.calle?.nombre].filter(Boolean).join(' · ') || '—'}
               </span>
             )

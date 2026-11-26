@@ -9,4 +9,6 @@ export const organizacionQueryKeys = {
   bancos: ['configuracion', 'bancos'] as const,
   cajas: ['configuracion', 'cajas'] as const,
   documentos: ['configuracion', 'documentos'] as const,
+  colaboradores: ['configuracion', 'colaboradores'] as const,
+  marcasMedidor: ['configuracion', 'marcas-medidor'] as const,
 }

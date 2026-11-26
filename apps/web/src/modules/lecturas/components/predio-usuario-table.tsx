@@ -4,10 +4,10 @@ import type { PredioOption } from '@/modules/lecturas/api'
 import { predioLabel, titularLabel } from '@/modules/lecturas/labels'
 
 const columns = [
-  { key: 'usuario', header: 'Usuario' },
-  { key: 'dni', header: 'DNI', className: 'w-28' },
-  { key: 'predio', header: 'Predio' },
-  { key: 'medidor', header: 'Medidor', className: 'w-28' },
+  { key: 'usuario', header: 'Usuario', className: 'whitespace-nowrap' },
+  { key: 'dni', header: 'DNI', className: 'w-28 whitespace-nowrap' },
+  { key: 'predio', header: 'Predio', className: 'whitespace-nowrap' },
+  { key: 'medidor', header: 'Medidor', className: 'w-28 whitespace-nowrap' },
   { key: 'registrar', header: '', className: 'w-36 text-right' },
 ]
 

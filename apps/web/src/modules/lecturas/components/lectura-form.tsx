@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { Button, Icon, Input, Select } from '@/design-system/atoms'
 import { FormField } from '@/design-system/molecules'
 import { FormLayout } from '@/design-system/templates'
+import { cn } from '@/shared/lib/utils'
 import type { LecturaListItem, PredioOption, ServicioOption, ValorM3Activo } from '@/modules/lecturas/api'
+import { useLecturadores } from '@/modules/lecturas/api'
 import {
   MESES,
   formatMoney,
@@ -34,9 +36,19 @@ export interface LecturaFormProps {
   valoresM3?: ValorM3Activo[]
   historialListo?: boolean
   predioId?: string | null
+  predioFijo?: boolean
   submitting?: boolean
   onRegisterMeter?: (predioId: string) => void
   onSubmit: (payload: LecturaPayload) => void
+}
+
+function nombreLecturador(item: {
+  apellido_paterno: string
+  apellido_materno: string
+  nombres: string
+}) {
+  const apellidos = [item.apellido_paterno, item.apellido_materno].filter(Boolean).join(' ')
+  return apellidos ? `${apellidos}, ${item.nombres}` : item.nombres
 }
 
 function withOption<T extends { id: string }>(options: T[], current: T | null | undefined) {
@@ -52,6 +64,7 @@ export function LecturaForm({
   valoresM3 = [],
   historialListo = true,
   predioId,
+  predioFijo = false,
   submitting,
   onRegisterMeter,
   onSubmit,
@@ -89,6 +102,7 @@ export function LecturaForm({
           lectura_m3: volumeInput(initial.lectura_m3),
           lectura_lt: volumeInput(initial.lectura_lt),
           referencia: initial.referencia,
+          colaborador_id: initial.colaborador_id ?? '',
         }
       : {
           predio_id: predioInicial,
@@ -99,6 +113,7 @@ export function LecturaForm({
           lectura_m3: '',
           lectura_lt: '0',
           referencia: '',
+          colaborador_id: '',
         },
   })
   const chosenId = form.watch('predio_id')
@@ -109,6 +124,29 @@ export function LecturaForm({
   const lecturaLtRaw = form.watch('lectura_lt')
   const predioElegido = predioOptions.find((predio) => predio.id === chosenId)
   const sinMedidor = !predioElegido?.medidor
+  const lecturadores = useLecturadores()
+  const centroId = predioElegido?.sector_id ?? predioElegido?.calle?.sector_id ?? null
+  const catalogoLecturador = lecturadores.data ?? []
+  const asignados = catalogoLecturador.filter(
+    (item) => centroId != null && item.sector_ids.includes(centroId),
+  )
+  const baseLecturador = asignados.length > 0 ? asignados : catalogoLecturador
+  const colaboradorId = form.watch('colaborador_id')
+  const lecturadorActual = catalogoLecturador.find((item) => item.id === colaboradorId)
+  const opcionesLecturador =
+    lecturadorActual && !baseLecturador.some((item) => item.id === lecturadorActual.id)
+      ? [lecturadorActual, ...baseLecturador]
+      : baseLecturador
+  useEffect(() => {
+    if (lecturadores.isLoading) return
+    const vigente = baseLecturador.some((item) => item.id === colaboradorId)
+    if (colaboradorId && vigente) return
+    if (!colaboradorId && asignados.length === 1) {
+      form.setValue('colaborador_id', asignados[0]?.id ?? '')
+      return
+    }
+    if (colaboradorId && !vigente) form.setValue('colaborador_id', '')
+  }, [asignados, baseLecturador, colaboradorId, form, lecturadores.isLoading])
   const periodoAplicado = useRef(`${predioInicial}|${servicioInicial}`)
   const ultimaRegistrada = ultimaLecturaDe(lecturas, {
     predioId: chosenId,
@@ -176,7 +214,8 @@ export function LecturaForm({
       noValidate
     >
       <FormLayout
-        columns={1}
+        columns={predioFijo ? 4 : 1}
+        dense={predioFijo}
         footer={
           <Button
             type="submit"
@@ -188,12 +227,12 @@ export function LecturaForm({
         }
       >
         {blocked ? (
-          <p className="text-sm text-muted-foreground">
+          <p className={cn('text-sm text-muted-foreground', predioFijo && 'sm:col-span-4')}>
             Hace falta al menos un predio activo y un tipo de servicio para registrar la lectura.
           </p>
         ) : null}
         {sinMedidor && !blocked ? (
-          <div className="space-y-2 rounded-md border border-border bg-muted/40 p-3">
+          <div className={cn('space-y-2 rounded-md border border-border bg-muted/40 p-3', predioFijo && 'sm:col-span-4')}>
             <p className="text-sm text-foreground">
               Este predio no tiene un medidor asignado. Registralo para poder guardar la lectura.
             </p>
@@ -204,18 +243,47 @@ export function LecturaForm({
             ) : null}
           </div>
         ) : null}
-        <FormField label="Predio" htmlFor="predio_id" error={form.formState.errors.predio_id?.message}>
-          <Select id="predio_id" {...form.register('predio_id')}>
-            {predioOptions.map((predio) => (
-              <option key={predio.id} value={predio.id}>
-                {predioOptionLabel(predio)}
+        <div className={cn('flex h-10 items-center gap-2', predioFijo && 'sm:col-span-4')}>
+          <label htmlFor="colaborador_id" className="shrink-0 text-sm font-medium text-foreground">
+            Lecturador:
+          </label>
+          <Select
+            id="colaborador_id"
+            className="h-8 min-w-0 flex-1"
+            disabled={lecturadores.isLoading}
+            {...form.register('colaborador_id')}
+          >
+            <option value="">
+              {lecturadores.isLoading
+                ? 'Cargando lecturadores…'
+                : opcionesLecturador.length === 0
+                  ? 'No hay lecturadores'
+                  : 'Seleccioná el lecturador'}
+            </option>
+            {opcionesLecturador.map((item) => (
+              <option key={item.id} value={item.id}>
+                {nombreLecturador(item)}
               </option>
             ))}
           </Select>
-        </FormField>
+        </div>
+        {predioFijo ? (
+          <input type="hidden" {...form.register('predio_id')} />
+        ) : (
+          <FormField label="Predio" htmlFor="predio_id" error={form.formState.errors.predio_id?.message}>
+            <Select id="predio_id" {...form.register('predio_id')}>
+              {predioOptions.map((predio) => (
+                <option key={predio.id} value={predio.id}>
+                  {predioOptionLabel(predio)}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        )}
         <FormField
           label="Servicio"
           htmlFor="tipo_servicio_id"
+          className={predioFijo ? 'sm:col-span-2' : undefined}
           error={form.formState.errors.tipo_servicio_id?.message}
         >
           <Select id="tipo_servicio_id" {...form.register('tipo_servicio_id')}>
@@ -312,6 +380,7 @@ export function LecturaForm({
         <FormField
           label="Referencia S/."
           htmlFor="referencia_soles"
+          className={predioFijo ? 'sm:col-span-2' : undefined}
           hint={
             primera
               ? 'La primera lectura no calcula monto. El importe en soles empieza en la siguiente lectura.'

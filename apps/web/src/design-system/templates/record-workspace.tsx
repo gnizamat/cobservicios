@@ -20,6 +20,8 @@ export interface RecordWorkspaceProps {
   form: ReactNode
   /** Sin el marco de la aplicación, para incrustar el catálogo en otra pantalla. */
   embedded?: boolean
+  /** La lista usa el ancho de la ventana y el panel lateral queda acotado. */
+  wide?: boolean
 }
 
 export function RecordWorkspace({
@@ -37,6 +39,7 @@ export function RecordWorkspace({
   formDescription,
   form,
   embedded = false,
+  wide = false,
 }: RecordWorkspaceProps) {
   const body = (
     <div className="min-w-0">
@@ -62,7 +65,13 @@ export function RecordWorkspace({
         filters={filters}
       />
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.75fr)]">
+      <div
+        className={
+          wide
+            ? 'grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]'
+            : 'grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.75fr)]'
+        }
+      >
         <div className="order-2 min-w-0 lg:order-1">{list}</div>
         <section className="order-1 min-w-0 lg:sticky lg:top-0 lg:order-2">
           <div className="mb-2 space-y-0.5">
@@ -78,5 +87,5 @@ export function RecordWorkspace({
   )
 
   if (embedded) return body
-  return <AppShell>{body}</AppShell>
+  return <AppShell className={wide ? 'max-w-none' : undefined}>{body}</AppShell>
 }

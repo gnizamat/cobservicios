@@ -28,6 +28,7 @@ export type UsuarioPredio = {
 export type MarcaMedidor = {
   id: string
   nombre: string
+  procedencia: string
 }
 
 export type MedidorAsignado = {
@@ -44,7 +45,8 @@ export type PredioOption = {
   numero: string
   manzana: string
   lote: string
-  calle: { nombre: string } | null
+  sector_id: string | null
+  calle: { nombre: string; sector_id: string | null } | null
   usuario: UsuarioPredio | null
   medidor: MedidorAsignado | null
 }
@@ -84,6 +86,7 @@ function mapPredio(value: PredioRow | PredioRow[] | null | undefined): PredioOpt
     numero: predio.numero,
     manzana: predio.manzana,
     lote: predio.lote,
+    sector_id: predio.sector_id,
     calle: embedOne(predio.calle),
     usuario: embedOne(predio.usuario),
     medidor: null,
@@ -91,7 +94,7 @@ function mapPredio(value: PredioRow | PredioRow[] | null | undefined): PredioOpt
 }
 
 const predioSelect =
-  'id, nombre, numero, manzana, lote, calle:cat_calles(nombre), usuario:pad_usuarios(id, nombres, apellido_paterno, apellido_materno, dni, tipo_persona)'
+  'id, nombre, numero, manzana, lote, sector_id, calle:cat_calles(nombre, sector_id), usuario:pad_usuarios(id, nombres, apellido_paterno, apellido_materno, dni, tipo_persona)'
 
 export type TerritorioLectura = {
   sectores: Array<{ id: string; nombre: string }>
@@ -191,10 +194,37 @@ export async function saveMedidor(
   return data
 }
 
+export type LecturadorOption = {
+  id: string
+  apellido_paterno: string
+  apellido_materno: string
+  nombres: string
+  sector_ids: string[]
+}
+
+export async function listLecturadores(): Promise<LecturadorOption[]> {
+  const { data, error } = await supabase
+    .from('hid_colaboradores')
+    .select(
+      'id, apellido_paterno, apellido_materno, nombres, asignaciones:hid_colaborador_sectores(sector_id)',
+    )
+    .order('apellido_paterno', { ascending: true })
+    .order('apellido_materno', { ascending: true })
+    .order('nombres', { ascending: true })
+  if (error) throw asHidrometriaError(error)
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    apellido_paterno: row.apellido_paterno,
+    apellido_materno: row.apellido_materno,
+    nombres: row.nombres,
+    sector_ids: (row.asignaciones ?? []).map((asignacion) => asignacion.sector_id),
+  }))
+}
+
 export async function listMarcasMedidor(): Promise<MarcaMedidor[]> {
   const { data, error } = await supabase
     .from('hid_marcas_medidor')
-    .select('id, nombre')
+    .select('id, nombre, procedencia')
     .order('nombre', { ascending: true })
   if (error) throw asHidrometriaError(error)
   return data ?? []
@@ -287,6 +317,7 @@ export async function saveLectura(
     p_lectura_lt: payload.lectura_lt,
     p_volumen_m3: payload.volumen_m3,
     p_referencia: payload.referencia,
+    p_colaborador_id: payload.colaborador_id,
   })
   if (error) throw asHidrometriaError(error)
 

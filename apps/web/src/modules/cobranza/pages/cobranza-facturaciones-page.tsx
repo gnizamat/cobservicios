@@ -80,7 +80,7 @@ export function CobranzaFacturacionesPage() {
   const esPagos = vista === 'pagos'
 
   return (
-    <AppShell>
+    <AppShell className="max-w-none">
       <PageHeader
         title={esPagos ? 'Listado de pagos' : 'Cobranza de facturaciones'}
         description={
@@ -154,7 +154,7 @@ export function CobranzaFacturacionesPage() {
         </p>
       ) : null}
 
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)]">
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_34rem]">
         <section className="min-w-0">
           {predios.isLoading ? (
             <p className="text-sm text-muted-foreground">Cargando predios con facturas…</p>
@@ -165,13 +165,13 @@ export function CobranzaFacturacionesPage() {
           ) : (
             <DataTable
               columns={[
-                { key: 'usuario', header: 'Usuario' },
-                { key: 'documento', header: 'Documento' },
-                { key: 'predio', header: 'Predio' },
-                { key: 'sector', header: 'Centro poblado' },
-                { key: 'calle', header: 'Calle' },
-                { key: 'facturas', header: 'Facturas', className: 'text-right' },
-                { key: 'monto', header: 'Pendiente', className: 'text-right' },
+                { key: 'usuario', header: 'Usuario', className: 'whitespace-nowrap px-1.5' },
+                { key: 'documento', header: 'Documento', className: 'whitespace-nowrap px-1.5' },
+                { key: 'predio', header: 'Predio', className: 'whitespace-nowrap px-1.5' },
+                { key: 'sector', header: 'Centro poblado', className: 'whitespace-nowrap px-1.5' },
+                { key: 'calle', header: 'Calle', className: 'whitespace-nowrap px-1.5' },
+                { key: 'facturas', header: 'Facturas', className: 'whitespace-nowrap px-1.5 text-right' },
+                { key: 'monto', header: 'Pendiente', className: 'whitespace-nowrap px-1.5 text-right' },
               ]}
               rows={rows}
               rowKey={(row) => row.predioId}

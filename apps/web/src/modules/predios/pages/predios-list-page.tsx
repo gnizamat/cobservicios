@@ -98,7 +98,7 @@ export function PrediosListPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell className="max-w-none">
       <PageHeader
         className="mb-3"
         title="Predios"
